@@ -1,0 +1,292 @@
+/*
+ * Copyright 2026 D.Jorand.
+ *
+ * This file is part of OpenXcom.
+ *
+ * OpenXcom is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenXcom is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenXcom.	If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+%echo "Processing Soldier.i"
+#endif
+
+namespace OpenXcom
+{
+
+enum SoldierRank : char { RANK_ROOKIE, RANK_SQUADDIE, RANK_SERGEANT, RANK_CAPTAIN, RANK_COLONEL, RANK_COMMANDER};
+enum SoldierGender : char { GENDER_MALE, GENDER_FEMALE };
+enum SoldierLook : char { LOOK_BLONDE, LOOK_BROWNHAIR, LOOK_ORIENTAL, LOOK_AFRICAN };
+
+
+class Soldier
+{
+public:
+
+	/// Gets soldier rules.
+	const RuleSoldier *getRules() const;
+
+	std::string getName(bool statstring = false, unsigned int maxLength = 20) const;
+	/// Sets the soldier's name.
+	void setName(const std::string &name);
+	/// Generates a new name based on nationality.
+	void genName();
+	/// Gets the soldier's callsign.
+	std::string getCallsign(unsigned int maxLength = 20) const;
+	/// Sets the soldier's callsign.
+	void setCallsign(const std::string &callsign);
+	/// Check for callsign assignment.
+	bool hasCallsign() const;
+
+#if 0
+	/// Gets the soldier's voice set type.
+	const std::string& getVoiceSetType() const { return _voiceSetType; }
+	/// Sets the soldier's voice set type.
+	void setVoiceSetType(const std::string& voiceSetType) { _voiceSetType = voiceSetType; }
+#endif
+
+	/// Gets the soldier's nationality.
+	int getNationality() const;
+	/// Sets the soldier's nationality.
+	void setNationality(int nationality);
+
+#if 0
+	/// Gets the soldier's craft.
+	Craft *getCraft() const;
+	/// Sets the soldier's craft.
+	void setCraft(Craft *craft, bool resetCustomDeployment = false);
+	/// Sets the soldier's craft and automatically moves the equipment (if enabled).
+	void setCraftAndMoveEquipment(Craft* craft, Base* base, bool isNewBattle, bool resetCustomDeployment = false);
+	/// Gets the soldier's craft string.
+	std::string getCraftString(Language *lang, const BaseSumDailyRecovery& recovery) const;
+#endif
+
+	/// Gets a string version of the soldier's rank.
+	std::string getRankString() const;
+#if 0
+	/// Gets a sprite version of the soldier's rank. Used for BASEBITS.PCK.
+	int getRankSprite() const;
+	/// Gets a sprite version of the soldier's rank. Used for SMOKE.PCK.
+	int getRankSpriteBattlescape() const;
+	/// Gets a sprite version of the soldier's rank. Used for TinyRanks.
+	int getRankSpriteTiny() const;
+#endif
+	/// Gets the soldier's rank.
+	SoldierRank getRank() const;
+	/// Increase the soldier's military rank.
+	void promoteRank();
+	/// Promotes/demotes a soldier to a specific rank.
+	void setRank(const SoldierRank newRank);
+
+
+	/// Gets the soldier's missions.
+	int getMissions() const;
+	/// Gets the soldier's kills.
+	int getKills() const;
+	/// Gets the soldier's stuns.
+	int getStuns() const;
+	/// Gets the soldier's gender.
+	SoldierGender getGender() const;
+	/// Sets the soldier's gender.
+	void setGender(SoldierGender gender);
+	/// Gets the soldier's look.
+	SoldierLook getLook() const;
+	/// Sets the soldier's look.
+	void setLook(SoldierLook look);
+	/// Gets the soldier's look sub type.
+	int getLookVariant() const;
+	/// Sets the soldier's look sub type.
+	void setLookVariant(int lookVariant);
+
+	/// Gets the soldier's unique ID.
+	int getId() const;
+
+#if 0
+	/// Add a mission to the counter.
+	void addMissionCount();
+	/// Add a kill to the counter.
+	void addKillCount(int count);
+	/// Add a stun to the counter.
+	void addStunCount(int count);
+	/// Get pointer to initial stats.
+	const UnitStats* getInitStats() const;
+	/// Get pointer to current stats.
+	UnitStats *getCurrentStatsEditable();
+	const UnitStats* getCurrentStats() const;
+	/// Set initial and current stats.
+	void setBothStats(UnitStats *stats);
+	/// Get whether the unit was recently promoted.
+	bool isPromoted();
+	/// Gets the soldier armor.
+	Armor *getArmor() const;
+	/// Sets the soldier armor.
+	void setArmor(Armor *armor, bool resetCustomDeployment = false);
+	/// Gets the armor layers (sprite names).
+	const std::vector<std::string>& getArmorLayers(Armor *customArmor = nullptr) const;
+	/// Gets the soldier's original armor (before replacement).
+	Armor *getReplacedArmor() const;
+	/// Backs up the soldier's original armor (before replacement).
+	void setReplacedArmor(Armor *armor);
+	/// Gets the soldier's original armor (before transformation).
+	Armor *getTransformedArmor() const;
+	/// Backs up the soldier's original armor (before transformation).
+	void setTransformedArmor(Armor *armor);
+
+
+	/// Is the soldier wounded or not?.
+	bool isWounded() const;
+	/// Is the soldier wounded or not?.
+	bool hasFullHealth() const;
+	/// Is the soldier capable of defending a base?.
+	bool canDefendBase() const;
+
+	/// Gets the amount of missing mana.
+	int getManaMissing() const;
+	/// Sets the amount of missing mana.
+	void setManaMissing(int manaMissing);
+	/// Gets the soldier's mana recovery time.
+	int getManaRecovery(int manaRecoveryPerDay) const;
+
+	/// Gets the amount of missing health.
+	int getHealthMissing() const;
+	/// Sets the amount of missing health.
+	void setHealthMissing(int healthMissing);
+	/// Gets the soldier's health recovery time.
+	int getHealthRecovery(int healthRecoveryPerDay) const;
+
+	/// Gets the soldier's wound recovery time.
+	int getWoundRecoveryInt() const;
+	/// Sets the soldier's wound recovery time.
+	void setWoundRecovery(int recovery);
+	/// Gets ther soldier's wound recovery.
+	int getWoundRecovery(float absBonus, float relBonus) const;
+
+	/// Heals wound recoveries.
+	void healWound(float absBonus, float relBonus);
+	/// Replenishes mana.
+	void replenishMana(int manaRecoveryPerDay);
+	/// Replenishes health.
+	void replenishHealth(int healthRecoveryPerDay);
+
+	/// Daily stat replenish and healing of the soldier based on the facilities available in the base.
+	void replenishStats(const BaseSumDailyRecovery& recovery);
+	/// Gets number of days until the soldier is ready for action again.
+	int getNeededRecoveryTime(const BaseSumDailyRecovery& recovery) const;
+
+
+	/// Gets the soldier's equipment-layout.
+	std::vector<EquipmentLayoutItem*> *getEquipmentLayout();
+	std::vector<EquipmentLayoutItem*> *getPersonalEquipmentLayout() { return &_personalEquipmentLayout; }
+	/// Gets the soldier's personal equipment armor.
+	const Armor* getPersonalEquipmentArmor() const { return _personalEquipmentArmor; }
+	/// Sets the soldier's personal equipment armor.
+	void setPersonalEquipmentArmor(const Armor* armor) { _personalEquipmentArmor = armor; }
+
+	/// Trains a soldier's psychic stats
+	void trainPsi();
+	/// Trains a soldier's psionic abilities (anytimePsiTraining option).
+	void trainPsi1Day();
+	/// Is the soldier already fully psi-trained?
+	bool isFullyPsiTrained();
+	/// Returns whether the unit is in psi training or not
+	bool isInPsiTraining() const;
+	/// set the psi training status
+	void setPsiTraining(bool psi);
+	/// returns this soldier's psionic skill improvement score for this month.
+	int getImprovement() const;
+	/// returns this soldier's psionic strength improvement score for this month.
+	int getPsiStrImprovement() const;
+
+	/// Gets the soldier death info.
+	SoldierDeath *getDeath() const;
+	/// Kills the soldier.
+	void die(SoldierDeath *death);
+
+	/// Clears the equipment layout.
+	void clearEquipmentLayout();
+
+	/// Gets the soldier's diary.
+	SoldierDiary *getDiary();
+	const SoldierDiary* getDiary() const;
+	/// Resets the soldier's diary.
+	void resetDiary();
+
+	/// Calculate statString.
+	void calcStatString(const std::vector<StatString *> &statStrings, bool psiStrengthEval);
+
+	/// Trains a soldier's physical stats
+	void trainPhys(int customTrainingFactor);
+	/// Is the soldier already fully trained?
+	bool isFullyTrained() const;
+	/// Returns whether the unit is in training or not
+	bool isInTraining() const;
+	/// set the training status
+	void setTraining(bool training);
+	/// Should the soldier return to martial training automatically when fully healed?
+	bool getReturnToTrainingWhenHealed() const;
+	/// Sets whether the soldier should return to martial training automatically when fully healed.
+	void setReturnToTrainingWhenHealed(bool returnToTrainingWhenHealed);
+
+	/// Sets whether the soldier's body was recovered from a battle
+	void setCorpseRecovered(bool corpseRecovered);
+	/// Gets the previous transformations performed on this soldier
+	std::map<std::string, int> &getPreviousTransformations();
+	/// Returns whether the unit is eligible for a certain transformation
+	bool isEligibleForTransformation(const RuleSoldierTransformation *transformationRule) const;
+	/// Performs a transformation on this soldier
+	void transform(const Mod *mod, RuleSoldierTransformation *transformationRule, Soldier *sourceSoldier, Base *base);
+	/// Calculates how this project changes the soldier's stats
+	UnitStats calculateStatChanges(const Mod *mod, RuleSoldierTransformation *transformationRule, Soldier *sourceSoldier, int mode, const RuleSoldier *sourceSoldierType);
+	/// Checks whether the soldier has a given bonus. Disclaimer: DOES NOT REFRESH THE BONUS CACHE!
+	bool hasBonus(const RuleSoldierBonus* bonus) const;
+	/// Gets all the soldier bonuses
+	const std::vector<const RuleSoldierBonus*> *getBonuses(const Mod *mod);
+	/// Get pointer to current stats with soldier bonuses, but without armor bonuses.
+	const UnitStats *getStatsWithSoldierBonusesOnly() const;
+	/// Get pointer to current stats with armor and soldier bonuses.
+	const UnitStats *getStatsWithAllBonuses() const;
+	/// Pre-calculates soldier stats with various bonuses.
+	bool prepareStatsWithBonuses(const Mod *mod);
+	/// Gets a pointer to the daily dogfight experience cache.
+	UnitStats* getDailyDogfightExperienceCache();
+	/// Resets the daily dogfight experience cache.
+	void resetDailyDogfightExperienceCache();
+	/// Check if the soldier has all the required soldier bonuses for the given soldier skill.
+	bool hasAllRequiredBonusesForSkill(const RuleSkill* skillRules);
+	/// Check if the soldier has all the required stats and soldier bonuses for piloting the (current or new) craft.
+	bool hasAllPilotingRequirements(const Craft* newCraft = nullptr) const;
+#endif /* 0 */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+%extend {
+	%newobject __str__;
+#endif
+	char *__str__() const {
+		char buffer[128];
+		if (self->hasCallsign()) {
+			snprintf(buffer, 128, "Soldier(%s,%s)@%p", self->getCallsign().c_str(), self->getName().c_str(), self);
+		} else {
+			snprintf(buffer, 128, "Soldier(%s)@%p", self->getName().c_str(), self);
+		}
+		return strdup(buffer);
+	}
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+}
+#endif
+
+};
+
+JSConvertPtr(Soldier);
+
+}  /* end of namespace OpenXcom */
+
