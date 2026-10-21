@@ -53,6 +53,7 @@
 #include "../fmath.h"
 #include "../Engine/RNG.h"
 #include "../Engine/Options.h"
+#include "../JS/JSEngine.h"
 #include "../Battlescape/Pathfinding.h"
 #include "RuleCountry.h"
 #include "RuleRegion.h"
@@ -422,7 +423,7 @@ public:
 /**
  * Creates an empty mod.
  */
-Mod::Mod() :
+Mod::Mod(JSEngine *js) :
 	_inventoryOverlapsPaperdoll(false),
 	_maxViewDistance(20), _maxDarknessToSeeUnits(9), _maxStaticLightDistance(16), _maxDynamicLightDistance(24), _enhancedLighting(0),
 	_costHireEngineer(0), _costHireScientist(0),
@@ -598,6 +599,8 @@ Mod::Mod() :
 	_pilotBraveryThresholds[0] = 90;
 	_pilotBraveryThresholds[1] = 80;
 	_pilotBraveryThresholds[2] = 30;
+
+	_jsengine = js;
 }
 
 /**
@@ -2190,6 +2193,7 @@ void Mod::loadAll()
 	{
 		Log(LOG_WARNING) << "Validation of mod data reduced, game can behave incorrectly";
 	}
+	_jsengine->BeginModLoad(this);
 	_scriptGlobal->beginLoad();
 	_modData.clear();
 	_modData.resize(mods.size());
@@ -2508,6 +2512,15 @@ void Mod::loadAll()
 	auto size = _voxelData.size();
 	Log(LOG_INFO) << "Loading ended. s: " << size << ", e: " << size / 16 << ", m: " << size / 16 - 1; // size, entries, max ID
 
+	const auto& mods_js = FileMap::getJSScripts();
+	Log(LOG_INFO) << "Loading JS scripts...";
+	// load the JS script defined in each mod (if any)
+	for (size_t i = 0; mods_js.size() > i; ++i)
+	{
+		loadJS(mods_js[i].second);
+	}
+	Log(LOG_VERBOSE) << "Loading JS scripts ended.";
+
 	sortLists();
 	modResources();
 }
@@ -2598,6 +2611,24 @@ void Mod::loadMod(const std::vector<FileMap::FileRecord> &rulesetFiles, ModScrip
 				throw Exception("Error with MissionWeights: Region: " + pair.first + " has " + name + " listed. Terror mission can only be invoked via missionScript, so sayeth the Spider Queen.");
 			}
 		}
+	}
+}
+
+/**
+ * Loads a list of JS scripts for the mod at the specified index. The first
+ * mod loaded should be the master at index 0, then 1, and so on.
+ * @param scriptFiles List of rulesets to load.
+ */
+void Mod::loadJS(const std::vector<FileMap::FileRecord> &jsFiles)
+{
+	std::vector<FileMap::FileRecord> sortedJSFiles = jsFiles;
+	std::sort(sortedJSFiles.begin(), sortedJSFiles.end(),
+		[](const FileMap::FileRecord& a, const FileMap::FileRecord& b)
+		{ return a.fullpath > b.fullpath; });
+	for (const auto& filerec : sortedJSFiles)
+	{
+		Log(LOG_INFO) << "- " << filerec.fullpath;
+		_jsengine->RunScript(filerec.fullpath);
 	}
 }
 
@@ -3833,7 +3864,7 @@ T *Mod::loadRule(const YAML::YamlNodeReader& reader, std::map<std::string, T*> *
  */
 SavedGame *Mod::newSave(GameDifficulty diff) const
 {
-	SavedGame *save = new SavedGame();
+	SavedGame *save = new SavedGame(_jsengine);
 	save->setDifficulty(diff);
 
 	// Add countries

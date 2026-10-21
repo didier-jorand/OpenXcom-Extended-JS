@@ -49,6 +49,7 @@ class CatFile;
 class GMCatFile;
 class Music;
 class Palette;
+class JSEngine;
 class SavedGame;
 class Soldier;
 class RuleCountry;
@@ -357,6 +358,8 @@ private:
 	size_t _soundOffsetBattle = 0;
 	size_t _soundOffsetGeo = 0;
 
+	JSEngine *_jsengine; // javascript engine
+
 	/// Loads a ruleset from a YAML file that have basic resources configuration.
 	void loadResourceConfigFile(const FileMap::FileRecord &filerec);
 	void loadConstants(const YAML::YamlNodeReader& reader);
@@ -403,6 +406,8 @@ private:
 	void lazyLoadSurface(const std::string &name);
 	/// Loads an external sprite.
 	void loadExtraSprite(ExtraSprites *spritePack);
+	/// Loads JS scripts.
+	void loadJS(const std::vector<FileMap::FileRecord> &jsFiles);
 	/// Applies mods to vanilla resources.
 	void modResources();
 	/// Sorts all our lists according to their weight.
@@ -484,13 +489,15 @@ public:
 	static void ScriptRegister(ScriptParserBase* parser);
 
 	/// Creates a blank mod.
-	Mod();
+	Mod(JSEngine *js);
 	/// Cleans up the mod.
 	~Mod();
 
 	/// For internal use only
 	const std::map<std::string, int> &getUfopaediaSections() const { return _ufopaediaSections; }
 
+	/// Get the Javascript Engine
+	JSEngine *getJSEngine() const { return _jsengine; }
 	/// Gets a particular font.
 	Font *getFont(const std::string &name, bool error = true) const;
 	/// Gets a particular surface.

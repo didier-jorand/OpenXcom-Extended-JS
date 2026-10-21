@@ -441,6 +441,22 @@ set ( rapidyaml_src
 
 )
 
+if(SWIG_FOUND)
+  include(UseSWIG)
+
+  set_property(SOURCE JS/openxcom.i PROPERTY CPLUSPLUS ON)
+  set_property(SOURCE JS/openxcom.i PROPERTY USE_SWIG_DEPENDENCIES ON)
+  set_property(SOURCE JS/openxcom.i PROPERTY COMPILE_OPTIONS "-quickjs;-nodefaultctor;-nodefaultdtor;-Wall")
+  set_property(SOURCE JS/openxcom.i PROPERTY GENERATED_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/src;${SWIG_DIR}/javascript/quickjs")
+  swig_add_library(libopenxcom_wrap TYPE STATIC LANGUAGE javascript SOURCES JS/openxcom.i)
+  set(PKG_DEPS_LDFLAGS "-L${CMAKE_BINARY_DIR}/src;-lopenxcom_wrap" ${PKG_DEPS_LDFLAGS})
+endif()
+
+
+set ( js_src
+  JS/JSEngine.cpp
+)
+
 set ( cxx_src
     ${root_src}
     ${basescape_src}
@@ -453,6 +469,7 @@ set ( cxx_src
     ${savegame_src}
     ${ufopedia_src}
     ${rapidyaml_src}
+    ${js_src}
 )
 
 set ( c_src
@@ -601,6 +618,7 @@ endif ()
 
 add_executable ( openxcom  ${application_type} ${openxcom_src} ${openxcom_icon} )
 
+
 if ( EMBED_ASSETS )
   add_dependencies(openxcom zips)
 endif ()
@@ -627,7 +645,7 @@ if (WIN32)
   set(WIN32_LIBS imagehlp dbghelp)
 endif(WIN32)
 
-target_link_libraries ( openxcom ${system_libs} ${PKG_DEPS_LDFLAGS} ${EXTRA_XCOM_LIBS} ${WIN32_LIBS} )
+target_link_libraries ( openxcom  ${system_libs} ${PKG_DEPS_LDFLAGS} ${EXTRA_XCOM_LIBS} ${WIN32_LIBS} )
 
 # Pack libraries into bundle and link executable appropriately
 if ( APPLE AND CREATE_BUNDLE )
@@ -636,18 +654,18 @@ if ( APPLE AND CREATE_BUNDLE )
 endif ()
 
 if ( NOT EMBED_ASSETS )
-  set ( bin_data_dirs TFTD UFO common standard )
+  set ( bin_data_dirs TFTD UFO common standard js )
   foreach ( binpath ${bin_data_dirs} )
     if ( APPLE AND CREATE_BUNDLE )
       add_custom_command ( TARGET openxcom
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/bin/${binpath} ${bundle_path}/Contents/Resources/${binpath}
-	    VERBATIM )
+      VERBATIM )
     else ()
       add_custom_command ( TARGET openxcom
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/bin/${binpath} ${EXECUTABLE_OUTPUT_PATH}/${binpath}
-	    VERBATIM )
+      VERBATIM )
       install ( DIRECTORY ${CMAKE_SOURCE_DIR}/bin/${binpath} DESTINATION ${data_install_dir} )
     endif ()
   endforeach ()
@@ -664,7 +682,7 @@ if ( WIN32 )
     add_custom_command ( TARGET openxcom
       POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy ${dll} ${EXECUTABLE_OUTPUT_PATH}
-	  VERBATIM )
+    VERBATIM )
     install ( FILES ${dll} DESTINATION bin)
   endforeach()
 endif ()

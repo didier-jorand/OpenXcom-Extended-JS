@@ -32,6 +32,7 @@
 #include "../Engine/Options.h"
 #include "../Engine/CrossPlatform.h"
 #include "../Engine/ScriptBind.h"
+#include "../JS/JSEngine.h"
 #include "SavedBattleGame.h"
 #include "SerializationHelper.h"
 #include "GameTime.h"
@@ -101,7 +102,7 @@ bool haveReserchVector(const std::vector<const RuleResearch*> &vec, const RuleRe
 /**
  * Initializes a brand new saved game according to the specified difficulty.
  */
-SavedGame::SavedGame() :
+SavedGame::SavedGame(JSEngine *js) :
 	_difficulty(DIFF_BEGINNER), _end(END_NONE), _ironman(false), _globeLon(0.0), _globeLat(0.0), _globeZoom(0),
 	_battleGame(0), _previewBase(nullptr), _debug(false), _warned(false),
 	_togglePersonalLight(true), _toggleNightVision(false), _toggleBrightness(0),
@@ -121,6 +122,20 @@ SavedGame::SavedGame() :
 	{
 		_globalCraftLoadout[j] = new ItemContainer();
 	}
+
+	_jsengine = js;
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		JSValue jsm = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onNew");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = _jsengine->NewInt(0);
+			JSValue jsself = _jsengine->ConvertSavedGamePtr(this);
+			JSValue jsargs[2] = {jsstep, jsself};
+			(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 2, jsargs);
+			_jsengine->FreeValue(jsself);
+			_jsengine->FreeValue(jsstep);
+			_jsengine->FreeValue(jsm);
+		}
+	}
 }
 
 /**
@@ -128,6 +143,19 @@ SavedGame::SavedGame() :
  */
 SavedGame::~SavedGame()
 {
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		JSValue jsm = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onDelete");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = _jsengine->NewInt(0);
+			JSValue jsself = _jsengine->ConvertSavedGamePtr(this);
+			JSValue jsargs[2] = {jsstep, jsself};
+			(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 2, jsargs);
+			_jsengine->FreeValue(jsself);
+			_jsengine->FreeValue(jsstep);
+			_jsengine->FreeValue(jsm);
+		}
+	}
+
 	delete _time;
 	for (auto* country : _countries)
 	{
@@ -375,6 +403,23 @@ void SavedGame::load(const std::string &filename, Mod *mod, Language *lang)
 {
 	std::string filepath = Options::getMasterUserFolder() + filename;
 	YAML::YamlRootNodeReader documents(filepath, false, false);
+
+	JSValue jsm = JS_UNDEFINED;
+	JSValue jsself, jsfilename;
+	JSValue jsargs[3];
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		jsm = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onLoad");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = _jsengine->NewInt(0);
+			jsself = _jsengine->ConvertSavedGamePtr(this);
+			jsfilename = _jsengine->NewString(filename);
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jsfilename;
+			(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 3, jsargs);
+			_jsengine->FreeValue(jsstep);
+		}
+	}
 
 	// Get brief save info
 	const auto& header = documents[0];
@@ -690,6 +735,16 @@ void SavedGame::load(const std::string &filename, Mod *mod, Language *lang)
 	}
 
 	_scriptValues.load(reader, mod->getScriptGlobal());
+
+	if (!JS_IsUndefined(jsm)) {
+		JSValue jsstep = _jsengine->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 3, jsargs);
+		_jsengine->FreeValue(jsfilename);
+		_jsengine->FreeValue(jsself);
+		_jsengine->FreeValue(jsstep);
+		_jsengine->FreeValue(jsm);
+	}
 }
 
 void SavedGame::loadTemplates(const YAML::YamlNodeReader& reader, const Mod* mod)
@@ -744,6 +799,24 @@ void saveVector(YAML::YamlNodeWriter& writer, const std::vector<T*>& vector, con
  */
 void SavedGame::save(const std::string &filename, Mod *mod) const
 {
+	JSValue jsm = JS_UNDEFINED;
+	JSValue jsself, jsfilename;
+	JSValue jsargs[3];
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		jsm = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onSave");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = _jsengine->NewInt(0);
+			jsself = _jsengine->ConvertSavedGamePtr(this);
+			jsfilename = _jsengine->NewString(filename);
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jsfilename;
+			(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 3, jsargs);
+			_jsengine->FreeValue(jsstep);
+		}
+	}
+
+
 	YAML::YamlRootNodeWriter headerWriter;
 	headerWriter.setAsMap();
 	// Saves the brief game info used in the saves list
@@ -909,6 +982,16 @@ void SavedGame::save(const std::string &filename, Mod *mod) const
 	if (!CrossPlatform::writeFile(filepath, finalString))
 	{
 		throw Exception("Failed to save " + filepath);
+	}
+
+	if (!JS_IsUndefined(jsm)) {
+		JSValue jsstep = _jsengine->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 3, jsargs);
+		_jsengine->FreeValue(jsfilename);
+		_jsengine->FreeValue(jsself);
+		_jsengine->FreeValue(jsstep);
+		_jsengine->FreeValue(jsm);
 	}
 }
 
@@ -3216,6 +3299,23 @@ bool SavedGame::spawnEvent(const RuleEvent* eventRules)
 		return false;
 	}
 
+	JSValue jsm = JS_UNDEFINED;
+	JSValue jsself, jsevent;
+	JSValue jsargs[3];
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		jsm = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onSpawnEvent");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = _jsengine->NewInt(0);
+			jsself = _jsengine->ConvertSavedGamePtr(this);
+			jsevent = _jsengine->ConvertRuleEventPtr(eventRules);
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jsevent;
+			(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 3, jsargs);
+			_jsengine->FreeValue(jsstep);
+		}
+	}
+
 	GeoscapeEvent* newEvent = new GeoscapeEvent(*eventRules);
 	int minutes = (eventRules->getTimer() + (RNG::generate(0, eventRules->getTimerRandom()))) / 30 * 30;
 	if (minutes < 60) minutes = 60; // just in case
@@ -3232,6 +3332,16 @@ bool SavedGame::spawnEvent(const RuleEvent* eventRules)
 		ss << " eventSpawn: " << newEvent->getRules().getName();
 		ss << " days/hours: " << (minutes / 60) / 24 << "/" << (minutes / 60) % 24;
 		_geoscapeDebugLog.push_back(ss.str());
+	}
+
+	if (!JS_IsUndefined(jsm)) {
+		JSValue jsstep = _jsengine->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)_jsengine->CallMethod(jsm, _jsengine->GetSavedGameObject(), 3, jsargs);
+		_jsengine->FreeValue(jsevent);
+		_jsengine->FreeValue(jsself);
+		_jsengine->FreeValue(jsstep);
+		_jsengine->FreeValue(jsm);
 	}
 
 	return true;

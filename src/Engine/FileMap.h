@@ -101,6 +101,11 @@ namespace FileMap
 	typedef std::vector<std::pair<std::string, std::vector<FileRecord>>> RSOrder;
 	const RSOrder &getRulesets();
 
+	/// Returns the JS files found, grouped by mod, while mapping resources. The highest-priority mod
+	/// will be last in the returned vector.
+
+	const RSOrder &getJSScripts();
+
 	/// absolutely clears FileMap state and maps common resources (dataDir/common)
 	void clear(bool clearOnly, bool embeddedOnly);
 

@@ -37,6 +37,7 @@ namespace OpenXcom
 {
 
 class Mod;
+class JSEngine;
 class GameTime;
 class Country;
 class Base;
@@ -177,12 +178,13 @@ private:
 	bool _disableSoldierEquipment;
 	bool _alienContainmentChecked;
 	ScriptValues<SavedGame> _scriptValues;
+	JSEngine *_jsengine;
 
 	static SaveInfo getSaveInfo(const std::string &file, Language *lang);
 public:
 	static const std::string AUTOSAVE_GEOSCAPE, AUTOSAVE_BATTLESCAPE, QUICKSAVE;
 	/// Creates a new saved game.
-	SavedGame();
+	SavedGame(JSEngine *js);
 	/// Cleans up the saved game.
 	~SavedGame();
 	/// Sanitizes a mod name in a save.
@@ -249,7 +251,7 @@ public:
 	void increaseCustomCounter(const std::string& name);
 	/// Decrease a custom counter.
 	void decreaseCustomCounter(const std::string& name);
-	/// Resets the list of object IDs.
+	/// Gets the list of object IDs.
 	const std::map<std::string, int> &getAllIds() const;
 	/// Resets the list of object IDs.
 	void setAllIds(const std::map<std::string, int> &ids);

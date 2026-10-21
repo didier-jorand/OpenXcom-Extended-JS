@@ -362,6 +362,15 @@ static bool isRuleset(const std::string& fname)
 	std::memcpy(&last4, fname.data() + fname.size() - 4, 4); // Need memcpy because unaligned ptr
 	return (last4 | toLowerCaseMask) == dotRul;
 }
+static bool isJSScript(const std::string& fname)
+{
+	if (fname.size() < 3) { return false; }
+	constexpr Uint32 dotRul =           '.' << 0 |  'j' << 8 |  's' << 16;
+	constexpr Uint32 toLowerCaseMask = 0x00 << 0 | 0x20 << 8 | 0x20 << 16;
+	Uint32 last3 = 0; // Pack last 3 chars into Uint32
+	std::memcpy(&last3, fname.data() + fname.size() - 3, 3); // Need memcpy because unaligned ptr
+	return (last3 | toLowerCaseMask) == dotRul;
+}
 
 typedef std::unordered_map<std::string, FileRecord> FileSet;
 static const NameSet emptySet;
@@ -371,10 +380,11 @@ struct VFSLayer {
 	std::string fullpath;				// the origin
 	FileSet resources; 					// relpath -> frec.
 	std::vector<FileRecord> rulesets;  	// keeps FileRecord copies ala hard links
+	std::vector<FileRecord> jsscripts;
 	std::unordered_map<std::string, NameSet> vdirs;
 	bool mapped;		 				// once mapped all this is immutable
 
-	VFSLayer(const std::string& path) : fullpath(path), resources(), rulesets(), vdirs(),
+	VFSLayer(const std::string& path) : fullpath(path), resources(), rulesets(), jsscripts(), vdirs(),
 										mapped(false) { }
 	~VFSLayer() { }
 	const FileRecord *at(const std::string& relpath) {
@@ -391,12 +401,17 @@ struct VFSLayer {
 		return (it == vdirs.end()) ? emptySet : it->second;
 	}
 	const std::vector<FileRecord>& get_rulesets() { return rulesets; }
+	const std::vector<FileRecord>& get_jsscripts() { return jsscripts; }
 
 	void insert(const std::string& relpath, FileRecord frec) {
 		auto crelpath = canonicalize(relpath);
 
 		if (isRuleset(crelpath)) {
 			rulesets.push_back(frec);
+			return;
+		}
+		if (isJSScript(crelpath)) {
+			jsscripts.push_back(frec);
 			return;
 		}
 		// shouldn't happen, but overwrite nevertheless
@@ -542,14 +557,16 @@ struct VFSLayerStack {
 	std::vector<VFSLayer *> layers;
 	FileSet resources;
 	std::vector<FileRecord> rulesets;
+	std::vector<FileRecord> jsscripts;
 	std::unordered_map<std::string, NameSet> vdirs;
 
-	VFSLayerStack() : layers(), resources(), rulesets(), vdirs() { }
+	VFSLayerStack() : layers(), resources(), rulesets(), jsscripts(), vdirs() { }
 
 	void clear() {
 		layers.clear(); 	// not deleting them, they're owned by VFSLayerSet
 		resources.clear();
 		rulesets.clear();
+		jsscripts.clear();
 		vdirs.clear();
 	}
 	void _merge_vdirs(VFSLayer *src) {
@@ -580,6 +597,10 @@ struct VFSLayerStack {
 		for (auto i = ruls.begin(); i != ruls.end(); ++i) {
 			rulesets.push_back(*i);
 		}
+		auto jss = layer->jsscripts;
+		for (auto i = jss.begin(); i != jss.end(); ++i) {
+			jsscripts.push_back(*i);
+		}
 		_merge_vdirs(layer);
 		_merge_resources(layer, false);
 	}
@@ -588,6 +609,10 @@ struct VFSLayerStack {
 		auto ruls = layer->rulesets;
 		for (auto i = ruls.rbegin(); i != ruls.rend(); ++i) {
 			rulesets.insert(rulesets.begin(), *i);
+		}
+		auto jss = layer->jsscripts;
+		for (auto i = jss.rbegin(); i != jss.rend(); ++i) {
+			jsscripts.insert(jsscripts.begin(), *i);
 		}
 		_merge_vdirs(layer);
 		_merge_resources(layer, true);
@@ -614,6 +639,7 @@ struct VFSLayerStack {
 		return rv;
 	}
 	const std::vector<FileRecord> &getRulesets() { return rulesets; }
+	const std::vector<FileRecord> &getJSScripts() { return jsscripts; }
 	void dump(std::ostream& out, const std::string& prefix, bool verbose) {
 		for (size_t i = 0; i < layers.size(); ++i) {
 			std::ostringstream subprefix;
@@ -633,6 +659,7 @@ struct ModRecord {
 	const FileRecord *at(const std::string& relpath) { return stack.at(relpath); }
 	const NameSet& ls(const std::string& relpath) { return stack.ls(relpath); }
 	const std::vector<FileRecord> &getRulesets() { return stack.getRulesets(); }
+	const std::vector<FileRecord> &getJSScripts() { return stack.getJSScripts(); }
 	void dump(std::ostream& out, const std::string& prefix, bool verbose) {
 		out << "  modId=" << modInfo.getId() << "; " << stack.layers.size() << " layers";
 		stack.dump(out, prefix, verbose);
@@ -645,10 +672,11 @@ static bool mapExtResources(ModRecord *, const std::string&, bool embeddedOnly);
 struct VFS {
 	std::vector<ModRecord *> mods;
 	VFSLayerStack stack;
-	RSOrder rsorder;
+	RSOrder rsorder, jsorder;
 
-	VFS() : mods(), stack(), rsorder() { }
+	VFS() : mods(), stack(), rsorder(), jsorder() { }
 	const RSOrder &get_rulesets() { return rsorder; }
+	const RSOrder &get_jsscripts() { return jsorder; }
 	const std::vector<const FileRecord *> get_slice(const std::string& relpath) { return stack.get_slice(relpath); }
 	const FileRecord *at(const std::string& relpath) { return stack.at(relpath); }
 	const NameSet& ls(const std::string& relpath) { return stack.ls(relpath); }
@@ -663,9 +691,11 @@ struct VFS {
 			stack.push_back(*i);
 		}
 		auto rulesets = mod->getRulesets();
+		auto jsscripts = mod->getJSScripts();
 		auto modId = mod->modInfo.getId();
 		// 	typedef std::vector<std::pair<std::string, std::vector<FileRecord *>>> RSOrder;
 		rsorder.push_back(std::make_pair(modId, rulesets));
+		jsorder.push_back(std::make_pair(modId, jsscripts));
 	}
 	void map_common(bool embeddedOnly) {
 		auto mrec = std::make_unique<ModRecord>("common");
@@ -679,6 +709,7 @@ struct VFS {
 	}
 	void clear() {
 		rsorder.clear();
+		jsorder.clear();
 		mods.clear();
 		stack.clear();
 	}
@@ -715,6 +746,8 @@ static void ModsAvailableAdd(std::unique_ptr<ModRecord>&& mrec)
 }
 
 const RSOrder &getRulesets() { return TheVFS.get_rulesets(); }
+
+const RSOrder &getJSScripts() { return TheVFS.get_jsscripts(); }
 
 static mz_zip_archive *newZipContext(const std::string& log_ctx, SDL_RWops *rwops) {
 	mz_zip_archive *zip = (mz_zip_archive *) SDL_malloc(sizeof(mz_zip_archive));

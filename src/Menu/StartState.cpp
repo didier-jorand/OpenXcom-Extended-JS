@@ -142,7 +142,12 @@ void StartState::init()
 	}
 
 	// Load the game data in a separate thread
-	_thread = SDL_CreateThread(load, (void*)_game);
+	// No multi-threading when using the JS Engine.
+	if (_game->getJSEngine() == NULL) {
+		_thread = SDL_CreateThread(load, (void*)_game);
+	} else {
+		_thread = 0;
+	}
 	if (_thread == 0)
 	{
 		// If we can't create the thread, just load it as usual

@@ -44,6 +44,7 @@
 #include "../Geoscape/GeoscapeState.h"
 #include "../Menu/TestState.h"
 #include "../fallthrough.h"
+#include "../JS/JSEngine.h"
 
 namespace OpenXcom
 {
@@ -103,6 +104,9 @@ Game::Game(const std::string &title) : _screen(0), _cursor(0), _lang(0), _save(0
 	// Create blank language
 	_lang = new Language();
 
+	// Initialize the Javascript Engine
+	_jsengine = new JSEngine();
+
 	_timeOfLastFrame = 0;
 }
 
@@ -127,6 +131,7 @@ Game::~Game()
 	delete _mod;
 	delete _screen;
 	delete _fpsCounter;
+	delete _jsengine;
 
 	Mix_CloseAudio();
 
@@ -397,6 +402,19 @@ void Game::quit()
 	}
 #endif
 	_quit = true;
+
+	if (!JS_IsUndefined(_jsengine->GetGameObject())) {
+		JSValue jsm = _jsengine->GetMethod(_jsengine->GetGameObject(), "onQuit");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = _jsengine->NewInt(0);
+			JSValue jsself = _jsengine->ConvertGamePtr(this);
+			JSValue jsargs[2] = {jsstep, jsself};
+			(void)_jsengine->CallMethod(jsm, _jsengine->GetGameObject(), 2, jsargs);
+			_jsengine->FreeValue(jsself);
+			_jsengine->FreeValue(jsstep);
+			_jsengine->FreeValue(jsm);
+		}
+	}
 }
 
 /**
@@ -502,7 +520,8 @@ void Game::loadMods()
 {
 	Mod::resetGlobalStatics();
 	delete _mod;
-	_mod = new Mod();
+	_jsengine->Reset(this);
+	_mod = new Mod(_jsengine);
 	_mod->loadAll();
 }
 

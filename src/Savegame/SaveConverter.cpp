@@ -154,7 +154,7 @@ void SaveConverter::getList(Language *lang, SaveOriginal info[NUM_SAVES])
  */
 SavedGame *SaveConverter::loadOriginal()
 {
-	_save = new SavedGame();
+	_save = new SavedGame(_mod->getJSEngine());
 
 	// Load globe data
 	_save->getIncomes().clear();

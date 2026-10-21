@@ -1,4 +1,4 @@
-cmake_minimum_required ( VERSION 3.5 )
+cmake_minimum_required ( VERSION 3.18 )
 
 project ( OpenXcom )
 
@@ -22,6 +22,10 @@ option ( CHECK_CCACHE "Check if ccache is installed and use it" OFF )
 set ( MSVC_WARNING_LEVEL 3 CACHE STRING "Visual Studio warning levels" )
 option ( FORCE_INSTALL_DATA_TO_BIN "Force installation of data to binary directory" OFF )
 set ( DATADIR "" CACHE STRING "Where to search for datafiles" )
+set ( QUICKJS_INC "/usr/include/quickjs" CACHE STRING "Where to find quickjs.h" )
+set ( QUICKJS_LIB "/usr/lib64/quickjs" CACHE STRING "Where to find libquickjs.a" )
+set ( SWIG_EXECUTABLE "" CACHE STRING "Where to find swig executable" )
+set ( SWIG_DIR "" CACHE STRING "Where to find swig directory" )
 
 if ( CHECK_CCACHE )
   find_program( CCACHE_PROGRAM ccache )
@@ -118,6 +122,16 @@ elseif(UNIX OR MINGW OR CYGWIN)
   message ( STATUS "PKG_DEPS_LDFLAGS: ${PKG_DEPS_LDFLAGS} ")
 else()
   message ( FATAL_ERROR "pkg-config is not supported on your platform. Use DEPS_DIR" )
+endif()
+
+# Include quickjs lib
+include_directories(${QUICKJS_INC})
+set(PKG_DEPS_LDFLAGS "${PKG_DEPS_LDFLAGS};-L${QUICKJS_LIB};-lquickjs")
+
+# Check for swig
+find_package(SWIG 4.5 COMPONENTS javascript)
+if(SWIG_FOUND)
+	message("SWIG found: ${SWIG_EXECUTABLE}")
 endif()
 
 # Read version number
@@ -241,4 +255,6 @@ if ( NOT WIN32 OR NOT CPACK_GENERATOR STREQUAL "7Z" ) # FIXME: that's to exclude
 endif ()
 
 add_subdirectory ( docs )
+add_subdirectory ( docs/JSWrappers )
+add_subdirectory ( docs/JSScripts )
 add_subdirectory ( src )
