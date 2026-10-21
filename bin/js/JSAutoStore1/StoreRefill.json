@@ -1,0 +1,91 @@
+// StoreRefill.json
+// Specification of the automated store management for
+// the script 'JSAutoStore1'
+//
+// Note: basic syntax check with:
+// qjs --std  -e "std.parseExtJSON(std.loadFile('StoreRefill.json'))"
+//
+
+{
+	version: "0.1",
+	description: "refill avalanche missiles if needed",
+
+	// Base is a map of bases,
+	// 'default' is the default configuration; if there is an entry by
+	// number (1 to 8) or by base name, it has the priority over
+	// the default.
+	bases: {
+		"default": {
+			// Each item to manage automatically has an entry with
+			// its ID in the map and the value is an object with
+			// attributes
+			// - min: below this, need to refill by purcase or manufacture
+			// - max: target after refill
+			// - onlyifstore: apply only if there is this object in the base store
+			// - onlyifweapon: apply only if this object is used as a
+			// weapon in a craft
+			// - onlyifcraft: apply only if this object is stored in a craft
+			// as item (not as weapon)
+			// - onlyifnot: do not apply if this object is available (to manage
+			// obsolete/replaced items)
+			// (not researched or not in purchase list)
+
+			// ***** Craft Weapons Ammo *****
+			STR_AVALANCHE_MISSILES: {min: 16, max: 24, onlyifweapon: "STR_AVALANCHE_LAUNCHER"},
+			STR_STINGRAY_MISSILES: {min: 16, max: 24, onlyifweapon: "STR_STINGRAY_LAUNCHER"},
+			STR_CANNON_ROUNDS_X50: {min: 16, max: 24, onlyifweapon: "STR_CANNON"},
+
+			// ***** Equipment *****
+			STR_MEDI_PACK: {min: 2, max: 6, onlyifnot: "STR_MEDI_KIT"},
+			STR_HEALING_SPRAY: {min: 2, max: 6, onlyifnot: "STR_MEDI_KIT", onlyifresearched: "STR_HEALING_SPRAY"},
+			STR_MEDI_KIT: {min: 2, max: 6, onlyifresearched: "STR_MEDI_KIT"},
+
+			STR_ARMORED_VEST: {min: 8, max: 12, onlyifnot: "STR_ALLOY_VEST", options: "in-craft"},
+			STR_ALLOY_VEST: {min: 8, max: 12, onlyifnot: "STR_PERSONAL_ARMOR", onlyifresearched: "STR_ALLOW_VEST", options: "in-craft"},
+			STR_PERSONAL_ARMOR: {min: 8, max: 12, onlyifnot: "STR_POWER_SUIT", onlyifresearched: "STR_PERSONAL_ARMOR", options: "in-craft"},
+			STR_JUMP_ARMOR: {min: 4, max: 8, onlyifnot: "STR_FLYING_SUIT", onlyifresearched: "STR_JUMP_ARMOR", options: "in-craft"},
+			STR_POWER_SUIT: {min: 4, max: 8, onlyifresearched: "STR_POWER_SUIT", options: "in-craft"},
+			STR_FLYING_SUIT: {min: 4, max: 8, onlyifresearched: "STR_FLYING_SUIT", options: "in-craft"},
+
+			// ***** Other weapons and equipments *****
+			STR_GRENADE: {min: 8, max: 12, onlyifnot: "STR_ALIEN_GRENADE"},
+			STR_HIGH_EXPLOSIVE: {min: 4, max: 8},
+			STR_ELECTRO_FLARE: {min: 12, max: 24, options: "in-craft"},
+
+			STR_STUN_ROD: {min: 4, max: 8, options: "in-craft"},
+
+
+			// ***** Rifles and rifles ammo *****
+			STR_RIFLE: {min: 8, max: 12, onlyifnot: "STR_HEAVY_SNIPER_RIFLE", options: "in-craft"},
+			STR_RIFLE_CLIP: {min: 10, max: 20, onlyifcraft: "STR_RIFLE", onlyifnot: "STR_RIFLE_AA_CLIP"},
+			STR_RIFLE_AA_CLIP: {min: 10, max: 20, onlyifcraft: "STR_RIFLE", onlyifresearched: "STR_RIFLE_AA_CLIP"},
+
+			//     ensure to have enough sniper rifle clip or (when researched) alloy clip, then heavy
+			STR_SNIPER_RIFLE: {min: 2, max: 2, onlyifnot: "STR_HEAVY_SNIPER_RIFLE", options: "in-craft"},
+			STR_SNIPER_RIFLE_CLIP: {min: 2, max: 4, onlyifcraft: "STR_SNIPER_RIFLE", onlyifnot: "STR_SNIPER_RIFLE_AA_CLIP"},
+			STR_SNIPER_RIFLE_AA_CLIP: {min: 2, max: 4, onlyifcraft: "STR_SNIPER_RIFLE", onlyifresearched: "STR_SNIPER_RIFLE_AA_CLIP"},
+
+			STR_HEAVY_SNIPER_RIFLE: {min: 2, max: 2, onlyifresearched: "STR_HEAVY_SNIPER_RIFLE"},
+			STR_HEAVY_SNIPER_RIFLE_CLIP: {min: 2, max: 4, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE"},
+			STR_HEAVY_SNIPER_RIFLE_AA_CLIP: {min: 2, max: 4, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE_AA_CLIP"},
+			STR_HEAVY_SNIPER_RIFLE_HE_CLIP: {min: 2, max: 4, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE_HE_CLIP"},
+
+			// ***** Guns *****
+			STR_LIGHT_MINIGUN: {min: 2, max: 2, options: "in-craft"},
+			STR_LIGHT_MINIGUN_CLIP: {min: 4, max: 8, onlyifcraft: "STR_LIGHT_MINIGUN"},
+			STR_LIGHT_MINIGUN_CLIP: {min: 4, max: 8, onlyifcraft: "STR_LIGHT_MINIGUN", onlyifnot: "STR_LIGHT_MINIGUN_AA_CLIP"},
+			STR_LIGHT_MINIGUN_AA_CLIP: {min: 4, max: 8, onlyifcraft: "STR_LIGHT_MINIGUN", onlyifresearched: "STR_LIGHT_MINIGUN_AA_CLIP"},
+
+			STR_SHOTGUN: {min: 2, max: 2, options: "in-craft"},
+			STR_SHOTGUN_SHELLS: {min: 4, max: 8, onlyifcraft: "STR_SHOTGUN", onlyifnot: "STR_SHOTGUN_AA_SHELLS"},
+			STR_SHOTGUN_SHELLS_AP: {min: 4, max: 8, onlyifcraft: "STR_SHOTGUN", onlyifnot: "STR_SHOTGUN_AA_SHELLS_AP"},
+			STR_SHOTGUN_AA_SHELLS: {min: 4, max: 8, onlyifcraft: "STR_SHOTGUN", onlyifresearched: "STR_SHOTGUN_AA_SHELLS"},
+			STR_SHOTGUN_AA_SHELLS_AP: {min: 4, max: 8, onlyifcraft: "STR_SHOTGUN", onlyifresearched: "STR_SHOTGUN_AA_SHELLS_AP"},
+
+			// ***** tests *****
+			//ERRONEOUS: {min: 1, max: 10, onlyifnot: "STR_PISTOL"},
+			//STR_PISTOL: {min: 1, max: 10, onlyifnot: "ERRONEOUS"},
+
+		}
+	}
+}

@@ -2,8 +2,6 @@
 
 This is the 'README' for OpenXcom-Extended-JS, fork of OpenXcom-Extended.
 
-The original readme is [README-openxcom](README-openxcom.md)
-
 
 ## Introduction
 
@@ -21,7 +19,7 @@ events occur in the game (like loading a saved game).
 
 ## Prerequisites and Configuration
 
-OXCE requires the following developer libraries:
+OXCEJS requires the following developer libraries:
 
 - [SDL](https://www.libsdl.org) (libsdl1.2)
 - [SDL\_mixer](https://www.libsdl.org/projects/SDL_mixer/) (libsdl-mixer1.2)
@@ -50,10 +48,10 @@ Additional cmake options:
 
 ### JS Scripts Mods
 
-Scripting is added to the game in mods, like any other modification.
+Scripting is added to the game in mods, like any other module.
 
-In fact, dedicated mod with only scripts can be developped but
-scripts can also be integrated in mod with rulesets, resources, units, etc...
+A Mod can be made of scripts only or scripts can be integrated
+in existing mods with rulesets, resources, units, etc...
 
 When the mod is loaded, the scripts (any file with extension "js") will be run.
 Most of the time, it is expected that these scripts register functions to
@@ -114,8 +112,8 @@ Logic
 ## Status
 
 
-1. JS engine: in src/JS, initialized in Game constructor (src/Engine/Game.cpp), propagated to Mod object
-(src/Mod/Mod.cpp) and, from there, to SavedGame (src/Savegame/SavedGame.cpp)
+1. JS engine: in src/JS, created from Game constructor (src/Engine/Game.cpp), initialized when
+mod are loaded (src/Engine/Mod.cpp) and, propagated to SavedGame (src/Savegame/SavedGame.cpp).
 1. Mod loading: Mod implementation enhanced to load the JS scripts (src/Mod/Mod.cpp: in loadAll + loadJS)
 1. Trigger for events:
 
@@ -128,16 +126,25 @@ Logic
 	- GeoscapeState::onTime1Hour
 	- GeoscapeState::onTime1Day
 	- GeoscapeState::onTime1Month
+	- ...
 
 1. Proxy classes (see src/JS): wrappers generated with swig-quickjs
 
 	- Game
 	- SavedGame
 	- GameTime
-	- Country (in progress)
-	- Region (in progress)
-	- Base (in progress)
+	- Country + rule
+	- Region + rule
+	- Base (work in progress)
+		- BaseFacility + rule
+		- Craft + rule (and Target, MovingTarget)
+		- CraftWeapon + rule
+		- ResearchProject + rule
+		- Production + rule (RuleManufacture, RuleItem, RuleItemCategory)
+		- Soldier + rule
+		- Transfer
 	- GeoscapeState
+	- ...
 
 
 1. Bridge classes (see bin/JS/openxcom.js): bridge object for classes that
@@ -162,8 +169,7 @@ trigger events:
 
 1. Documentation
 
-	- Run `make doxygen` in build directory
 	- Wrappers are documented in docs/JSWrappers.
 	- Bridge objects are documented in docs/JSScripts.
-	- Example and demo mods are in bin/js/examples and bin/js/demos; they need
+	- Example and demo mods are in bin/js/; they need
 	to be manually added in the user `mods` directory and then activated.
