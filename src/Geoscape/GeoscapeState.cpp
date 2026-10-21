@@ -39,6 +39,7 @@
 #include "../Interface/Text.h"
 #include "../Interface/TextButton.h"
 #include "../Engine/Timer.h"
+#include "../JS/JSEngine.h"
 #include "../Savegame/GameTime.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Base.h"
@@ -948,6 +949,27 @@ const std::vector<Craft*>* GeoscapeState::updateActiveCrafts()
  */
 void GeoscapeState::time5Seconds()
 {
+	JSEngine *js = _game->getJSEngine();
+	JSValue jsm = JS_UNDEFINED;
+	JSValue jsself, jssavedgame;
+	JSValue jsargs[3];
+	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
+		jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime5Seconds");
+		if (!JS_IsUndefined(jsm)) {
+			JSValue jsstep = js->NewInt(0);
+			jsself = js->ConvertGeoscapeStatePtr(this);
+			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jssavedgame;
+			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jssavedgame);
+			js->FreeValue(jsself);
+			js->FreeValue(jsstep);
+			js->FreeValue(jsm);
+		}
+	}
+
 	// If in "slow mode", handle UFO hunting and escorting logic every 5 seconds, not only every 10 minutes
 	if ((_timeSpeed == _btn5Secs || _timeSpeed == _btn1Min) && _game->getMod()->getHunterKillerFastRetarget())
 	{
@@ -1532,6 +1554,24 @@ bool DetectXCOMBase::operator()(const Ufo *ufo) const
  */
 void GeoscapeState::time10Minutes()
 {
+	JSEngine *js = _game->getJSEngine();
+	JSValue m = JS_UNDEFINED;
+	JSValue jsself, jssavedgame;
+	JSValue jsargs[3];
+	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
+		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime10Minutes");
+		if (!JS_IsUndefined(m)) {
+			JSValue jsstep = js->NewInt(0);
+			jsself = js->ConvertGeoscapeStatePtr(this);
+			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jssavedgame;
+			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsstep);
+		}
+	}
+
 	for (auto* xbase : *_game->getSavedGame()->getBases())
 	{
 		// Fuel consumption for XCOM craft.
@@ -1617,6 +1657,16 @@ void GeoscapeState::time10Minutes()
 
 	// Handle UFO re-targeting (i.e. hunting and escorting) logic
 	ufoHuntingAndEscorting();
+
+	if (js && !JS_IsUndefined(m)) {
+		JSValue jsstep = js->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+		js->FreeValue(jssavedgame);
+		js->FreeValue(jsself);
+		js->FreeValue(jsstep);
+		js->FreeValue(m);
+	}
 }
 
 void GeoscapeState::ufoHuntingAndEscorting()
@@ -1884,6 +1934,24 @@ bool GeoscapeState::processMissionSite(MissionSite *site)
  */
 void GeoscapeState::time30Minutes()
 {
+	JSEngine *js = _game->getJSEngine();
+	JSValue m = JS_UNDEFINED;
+	JSValue jsself, jssavedgame;
+	JSValue jsargs[3];
+	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
+		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime30Minutes");
+		if (!JS_IsUndefined(m)) {
+			JSValue jsstep = js->NewInt(0);
+			jsself = js->ConvertGeoscapeStatePtr(this);
+			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jssavedgame;
+			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsstep);
+		}
+	}
+
 	// Decrease mission countdowns
 	for (auto* am : _game->getSavedGame()->getAlienMissions())
 	{
@@ -2073,6 +2141,16 @@ void GeoscapeState::time30Minutes()
 			return ge->isOver();
 		}
 	);
+
+	if (js && !JS_IsUndefined(m)) {
+		JSValue jsstep = js->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+		js->FreeValue(jssavedgame);
+		js->FreeValue(jsself);
+		js->FreeValue(jsstep);
+		js->FreeValue(m);
+	}
 }
 
 /**
@@ -2145,6 +2223,24 @@ void GeoscapeState::ufoDetection(Ufo* ufo, const std::vector<Craft*>* activeCraf
  */
 void GeoscapeState::time1Hour()
 {
+	JSEngine *js = _game->getJSEngine();
+	JSValue m = JS_UNDEFINED;
+	JSValue jsself, jssavedgame;
+	JSValue jsargs[3];
+	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
+		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Hour");
+		if (!JS_IsUndefined(m)) {
+			JSValue jsstep = js->NewInt(0);
+			jsself = js->ConvertGeoscapeStatePtr(this);
+			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jssavedgame;
+			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsstep);
+		}
+	}
+
 	// Handle craft maintenance
 	for (auto* xbase : *_game->getSavedGame()->getBases())
 	{
@@ -2292,6 +2388,16 @@ void GeoscapeState::time1Hour()
 	}
 
 	updateSlackingIndicator();
+
+	if (js && !JS_IsUndefined(m)) {
+		JSValue jsstep = js->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+		js->FreeValue(jssavedgame);
+		js->FreeValue(jsself);
+		js->FreeValue(jsstep);
+		js->FreeValue(m);
+	}
 }
 
 /**
@@ -2390,6 +2496,25 @@ void GenerateSupplyMission::operator()(AlienBase *base) const
 void GeoscapeState::time1Day()
 {
 	_game->getSavedGame()->increaseDaysPassed();
+
+	JSEngine *js = _game->getJSEngine();
+	JSValue m = JS_UNDEFINED;
+	JSValue jsself, jssavedgame;
+	JSValue jsargs[3];
+	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
+		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Day");
+		if (!JS_IsUndefined(m)) {
+			JSValue jsstep = js->NewInt(0);
+			jsself = js->ConvertGeoscapeStatePtr(this);
+			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jssavedgame;
+			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsstep);
+		}
+	}
+
 
 	SavedGame *saveGame = _game->getSavedGame();
 	Mod *mod = _game->getMod();
@@ -2851,6 +2976,16 @@ void GeoscapeState::time1Day()
 			popup(new CraftErrorState(this, msg, false));
 		}
 	}
+
+	if (js && !JS_IsUndefined(m)) {
+		JSValue jsstep = js->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+		js->FreeValue(jssavedgame);
+		js->FreeValue(jsself);
+		js->FreeValue(jsstep);
+		js->FreeValue(m);
+	}
 }
 
 /**
@@ -2860,6 +2995,24 @@ void GeoscapeState::time1Day()
 void GeoscapeState::time1Month()
 {
 	_game->getSavedGame()->addMonth();
+
+	JSEngine *js = _game->getJSEngine();
+	JSValue m = JS_UNDEFINED;
+	JSValue jsself, jssavedgame;
+	JSValue jsargs[3];
+	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
+		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Month");
+		if (!JS_IsUndefined(m)) {
+			JSValue jsstep = js->NewInt(0);
+			jsself = js->ConvertGeoscapeStatePtr(this);
+			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+			jsargs[0] = jsstep;
+			jsargs[1] = jsself;
+			jsargs[2] = jssavedgame;
+			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsstep);
+		}
+	}
 
 	// Determine alien mission for this month.
 	determineAlienMissions();
@@ -2901,6 +3054,16 @@ void GeoscapeState::time1Month()
 				break;
 			}
 		}
+	}
+
+	if (js && !JS_IsUndefined(m)) {
+		JSValue jsstep = js->NewInt(1);
+		jsargs[0] = jsstep;
+		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+		js->FreeValue(jssavedgame);
+		js->FreeValue(jsself);
+		js->FreeValue(jsstep);
+		js->FreeValue(m);
 	}
 }
 

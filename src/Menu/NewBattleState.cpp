@@ -414,7 +414,7 @@ void NewBattleState::load(const std::string &filename)
 			if (cfgReader["base"])
 			{
 				const Mod *mod = _game->getMod();
-				SavedGame *save = new SavedGame();
+				SavedGame *save = new SavedGame(_game->getJSEngine());
 
 				Base *base = new Base(mod);
 				base->load(cfgReader["base"], save, false);
@@ -505,7 +505,7 @@ void NewBattleState::save(const std::string &filename)
 void NewBattleState::initSave()
 {
 	const Mod *mod = _game->getMod();
-	SavedGame *save = new SavedGame();
+	SavedGame *save = new SavedGame(_game->getJSEngine());
 	Base *base = new Base(mod);
 	YAML::YamlRootNodeReader startingBaseReader(_game->getMod()->getDefaultStartingBase(), "(starting base template)");
 	base->load(startingBaseReader, save, true, true);

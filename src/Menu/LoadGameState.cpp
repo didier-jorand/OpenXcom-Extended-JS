@@ -163,7 +163,7 @@ void LoadGameState::think()
 		_game->resetTouchButtonFlags();
 
 		// Load the game
-		SavedGame *s = new SavedGame();
+		SavedGame *s = new SavedGame(_game->getJSEngine());
 		try
 		{
 			s->load(_filename, _game->getMod(), _game->getLanguage());
