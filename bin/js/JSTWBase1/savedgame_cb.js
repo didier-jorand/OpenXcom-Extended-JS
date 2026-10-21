@@ -71,7 +71,7 @@
 				// Test "containment" (Alien containment: prisonType=0)
 				print("Alien Containment:", b.getUsedContainment(0), b.getAvailableContainment(0), b.getFreeContainment(0));
 
-				// Test "soldiers" details
+				// Test "soldiers" details (more in JSTWSoldier<N>)
 				let soldiers = b.getSoldiers();
 				let sl = "";
 				for (let k = 0; k < soldiers.size(); k++) {

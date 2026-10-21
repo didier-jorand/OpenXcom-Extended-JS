@@ -19,6 +19,9 @@
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 %echo "Processing Soldier.i"
+
+%template(EquipmentLayoutItemPVector) std::vector<OpenXcom::EquipmentLayoutItem*>;
+
 #endif
 
 namespace OpenXcom
@@ -28,6 +31,7 @@ enum SoldierRank : char { RANK_ROOKIE, RANK_SQUADDIE, RANK_SERGEANT, RANK_CAPTAI
 enum SoldierGender : char { GENDER_MALE, GENDER_FEMALE };
 enum SoldierLook : char { LOOK_BLONDE, LOOK_BROWNHAIR, LOOK_ORIENTAL, LOOK_AFRICAN };
 
+class Craft;
 
 class Soldier
 {
@@ -60,11 +64,11 @@ public:
 	/// Sets the soldier's nationality.
 	void setNationality(int nationality);
 
-#if 0
 	/// Gets the soldier's craft.
 	Craft *getCraft() const;
 	/// Sets the soldier's craft.
 	void setCraft(Craft *craft, bool resetCustomDeployment = false);
+#if 0
 	/// Sets the soldier's craft and automatically moves the equipment (if enabled).
 	void setCraftAndMoveEquipment(Craft* craft, Base* base, bool isNewBattle, bool resetCustomDeployment = false);
 	/// Gets the soldier's craft string.
@@ -118,19 +122,24 @@ public:
 	void addKillCount(int count);
 	/// Add a stun to the counter.
 	void addStunCount(int count);
+#endif
 	/// Get pointer to initial stats.
 	const UnitStats* getInitStats() const;
 	/// Get pointer to current stats.
 	UnitStats *getCurrentStatsEditable();
 	const UnitStats* getCurrentStats() const;
+#if 0
 	/// Set initial and current stats.
 	void setBothStats(UnitStats *stats);
 	/// Get whether the unit was recently promoted.
 	bool isPromoted();
+#endif
+
 	/// Gets the soldier armor.
 	Armor *getArmor() const;
 	/// Sets the soldier armor.
 	void setArmor(Armor *armor, bool resetCustomDeployment = false);
+#if 0
 	/// Gets the armor layers (sprite names).
 	const std::vector<std::string>& getArmorLayers(Armor *customArmor = nullptr) const;
 	/// Gets the soldier's original armor (before replacement).
@@ -141,7 +150,7 @@ public:
 	Armor *getTransformedArmor() const;
 	/// Backs up the soldier's original armor (before transformation).
 	void setTransformedArmor(Armor *armor);
-
+#endif
 
 	/// Is the soldier wounded or not?.
 	bool isWounded() const;
@@ -178,19 +187,20 @@ public:
 	/// Replenishes health.
 	void replenishHealth(int healthRecoveryPerDay);
 
+#if 0
 	/// Daily stat replenish and healing of the soldier based on the facilities available in the base.
 	void replenishStats(const BaseSumDailyRecovery& recovery);
 	/// Gets number of days until the soldier is ready for action again.
 	int getNeededRecoveryTime(const BaseSumDailyRecovery& recovery) const;
-
+#endif
 
 	/// Gets the soldier's equipment-layout.
 	std::vector<EquipmentLayoutItem*> *getEquipmentLayout();
-	std::vector<EquipmentLayoutItem*> *getPersonalEquipmentLayout() { return &_personalEquipmentLayout; }
+	std::vector<EquipmentLayoutItem*> *getPersonalEquipmentLayout();
 	/// Gets the soldier's personal equipment armor.
-	const Armor* getPersonalEquipmentArmor() const { return _personalEquipmentArmor; }
+	const Armor* getPersonalEquipmentArmor() const;
 	/// Sets the soldier's personal equipment armor.
-	void setPersonalEquipmentArmor(const Armor* armor) { _personalEquipmentArmor = armor; }
+	void setPersonalEquipmentArmor(const Armor* armor);
 
 	/// Trains a soldier's psychic stats
 	void trainPsi();
@@ -207,14 +217,17 @@ public:
 	/// returns this soldier's psionic strength improvement score for this month.
 	int getPsiStrImprovement() const;
 
+#if 0
 	/// Gets the soldier death info.
 	SoldierDeath *getDeath() const;
 	/// Kills the soldier.
 	void die(SoldierDeath *death);
+#endif
 
 	/// Clears the equipment layout.
 	void clearEquipmentLayout();
 
+#if 0
 	/// Gets the soldier's diary.
 	SoldierDiary *getDiary();
 	const SoldierDiary* getDiary() const;
@@ -223,6 +236,7 @@ public:
 
 	/// Calculate statString.
 	void calcStatString(const std::vector<StatString *> &statStrings, bool psiStrengthEval);
+#endif
 
 	/// Trains a soldier's physical stats
 	void trainPhys(int customTrainingFactor);
@@ -237,6 +251,7 @@ public:
 	/// Sets whether the soldier should return to martial training automatically when fully healed.
 	void setReturnToTrainingWhenHealed(bool returnToTrainingWhenHealed);
 
+#if 0
 	/// Sets whether the soldier's body was recovered from a battle
 	void setCorpseRecovered(bool corpseRecovered);
 	/// Gets the previous transformations performed on this soldier

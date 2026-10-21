@@ -1,0 +1,7 @@
+name: "JSTWSoldier1"
+version: "0.1"
+author: "D.Jorand"
+description: "Test Wrappers for class Soldier"
+id: jstwsoldier1
+master: xcom1
+

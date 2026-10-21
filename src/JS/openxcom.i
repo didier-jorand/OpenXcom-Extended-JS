@@ -85,13 +85,14 @@
 #include "Mod/RuleRegion.h"
 #include "Mod/RuleItemCategory.h"
 #include "Mod/RuleItem.h"
+#include "Mod/RuleInventory.h"
 #include "Mod/RuleResearch.h"
+#include "Mod/Unit.h"
+#include "Mod/Armor.h"
 #include "Mod/RuleCraft.h"
 #include "Mod/RuleCraftWeapon.h"
 #include "Mod/RuleUfo.h"
 #include "Mod/RuleManufacture.h"
-#include "Mod/RuleItem.h"
-#include "Mod/Unit.h"
 #include "Mod/RuleSoldier.h"
 #include "Mod/RuleBaseFacility.h"
 
@@ -104,6 +105,7 @@
 #include "Savegame/ResearchProject.h"
 #include "Savegame/ItemContainer.h"
 #include "Savegame/Production.h"
+#include "Savegame/EquipmentLayoutItem.h"
 #include "Savegame/Soldier.h"
 #include "Savegame/Target.h"
 #include "Savegame/MovingTarget.h"
@@ -144,6 +146,10 @@ JSValue JSConvert ## type ## Ptr(JSContext *ctx, const OpenXcom::type* ptr) {
 // Common Templates
 // ---------------------------------------------------------
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+typedef signed char Sint8;
+typedef unsigned char Uint8;
+typedef short int Sint16;
+typedef unsigned short int Uint16;
 typedef long long int64_t;
 typedef unsigned long long uint64_t;
 
@@ -179,7 +185,7 @@ enum SeverityLevel {
 %inline %{
 namespace OpenXcom {
 void JSLog(SeverityLevel level, const char* message) {
-	Log(level) << "JSEngine:JS: " << message;
+	Log(level) << "JSEngine: " << message;
 }
 }
 %}
@@ -199,9 +205,11 @@ extern OpenXcom::Game *game; // global defined in main.cpp
 %include "Mod/ruleregion.i"
 %include "Mod/ruleitemcategory.i"
 %include "Mod/ruleitem.i"
+%include "Mod/ruleinventory.i"
 %include "Mod/ruleresearch.i"
 %include "Mod/unit.i"
 %include "Mod/rulesoldier.i"
+%include "Mod/armor.i"
 %include "Mod/rulecraft.i"
 %include "Mod/rulecraftweapon.i"
 %include "Mod/ruleufo.i"
@@ -222,6 +230,7 @@ extern OpenXcom::Game *game; // global defined in main.cpp
 %include "Savegame/researchproject.i"
 %include "Savegame/itemcontainer.i"
 %include "Savegame/production.i"
+%include "Savegame/equipmentlayoutitem.i"
 %include "Savegame/soldier.i"
 %include "Savegame/target.i"
 %include "Savegame/movingtarget.i"
