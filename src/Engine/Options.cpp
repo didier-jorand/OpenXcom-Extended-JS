@@ -829,12 +829,6 @@ bool init()
 {
 	if (showHelp())
 		return false;
-	create();
-	resetDefault(true);
-	loadArgs();
-	setFolders();
-	_setDefaultMods();
-	updateOptions();
 
 	// set up the logging reportingLevel
 #ifndef NDEBUG
@@ -842,6 +836,14 @@ bool init()
 #else
 	Logger::reportingLevel() = LOG_INFO;
 #endif
+
+	create();
+	resetDefault(true);
+	loadArgs();
+	setFolders();
+	_setDefaultMods();
+	updateOptions();
+
 
 	if (Options::verboseLogging)
 		Logger::reportingLevel() = LOG_VERBOSE;

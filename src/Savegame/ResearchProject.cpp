@@ -43,7 +43,7 @@ bool ResearchProject::step()
 /**
  * gets state of project.
  */
-bool ResearchProject::isFinished()
+bool ResearchProject::isFinished() const
 {
 	return _spent >= getCost();
 }

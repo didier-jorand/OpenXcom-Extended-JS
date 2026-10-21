@@ -40,7 +40,7 @@ public:
 	/// Game logic. Called every new day to compute time spent.
 	bool step();
 	/// gets state of project.
-	bool isFinished();
+	bool isFinished() const;
 	/// set the number of scientist assigned to this ResearchProject
 	void setAssigned (int nb);
 	/// get the number of scientist assigned to this ResearchProject
