@@ -93,10 +93,11 @@ the program classes and the proxy object ; in this case, it is the "jsSavedGame"
 
 Logic
 
-```
+
+| -------------------------- | --------------------- | -------------------- |
 | Main program               | Bridge object         | Script               |
 | -------------------------- | --------------------- | -------------------- |
-| SavedGame::load  {         | | |
+| SavedGame::load  {         |                       |                      |
 |	// call the bridge object | | |
 |	js->getObject(..."jsSavedGame"|...) |||
 |	js->getMethod(..."onLoad"...) |||
@@ -107,7 +108,7 @@ Logic
 |                            |    |  runs 'onLoadCompleted(...)' |
 | -------------------------- | --------------------- | -------------------- |
 
-```
+
 
 ## Status
 
