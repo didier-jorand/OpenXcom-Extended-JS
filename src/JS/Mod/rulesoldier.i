@@ -1,0 +1,208 @@
+/*
+ * Copyright 2026 D.Jorand.
+ *
+ * This file is part of OpenXcom.
+ *
+ * OpenXcom is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenXcom is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenXcom.	If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+%echo "Processing RuleSoldier.i"
+#endif
+
+namespace OpenXcom
+{
+
+class RuleSoldier
+{
+public:
+#if 0
+	/// Number of bits for soldier gender.
+	static constexpr int LookGenderBits;
+	/// Number of bits for soldier look.
+	static constexpr int LookBaseBits;
+	/// Number of bits for soldier lookVariants.
+	static constexpr int LookVariantBits;
+	/// Max number of soldier lookVariant.s
+	static constexpr int LookVariantMax;
+	/// Mask for soldier lookVariants.
+	static constexpr int LookVariantMask;
+	/// Mask for all possible looks types for soldier.
+	static constexpr int LookTotalMask;
+#endif
+
+	/// Gets the soldier's type.
+	const std::string& getType() const;
+	/// Gets the soldier's name prefix.
+	const std::string& getPrefix() const { return _prefix; }
+
+#if 0
+	/// Gets the spawned soldier template.
+	const YAML::YamlString& getSpawnedSoldierTemplate() const { return _spawnedSoldier; }
+#endif
+	/// Gets the soldier type group.
+	int getGroup() const { return _group; }
+	/// Gets whether or not the soldier type should be displayed in the inventory.
+	bool getShowTypeInInventory() const { return _showTypeInInventory; }
+	/// Gets the list/sort order of the soldier's type.
+	int getListOrder() const;
+	/// Gets the soldier's requirements.
+	const std::vector<const RuleResearch*> &getRequirements() const;
+#if 0
+	/// Gets the base functions required to hire this soldier type.
+	RuleBaseFacilityFunctions getRequiresBuyBaseFunc() const { return _requiresBuyBaseFunc; }
+
+	/// Gets the allied country name required to hire this soldier type.
+	const std::string& getRequiresBuyCountry() const { return _requiresBuyCountry; }
+	/// Gets the minimum stats for the random stats generator.
+	UnitStats getMinStats() const;
+	/// Gets the maximum stats for the random stats generator.
+	UnitStats getMaxStats() const;
+	/// Gets the stat caps.
+	UnitStats getStatCaps() const;
+	/// Gets the training stat caps.
+	UnitStats getTrainingStatCaps() const;
+	/// Gets the improvement chances for pilots (after dogfight).
+	UnitStats getDogfightExperience() const;
+	/// Gets the monthly hiring limit.
+	int getMonthlyBuyLimit() const { return _monthlyBuyLimit; }
+	/// Gets the monthly hiring limit message.
+	const std::string& getMonthlyBuyLimitMessage() const;
+	/// Gets the cost of the soldier.
+	int getBuyCost() const;
+	/// Does salary depend on rank?
+	bool isSalaryDynamic() const;
+	/// Gets the list of defined skills.
+	const std::vector<const RuleSkill*> &getSkills() const;
+	/// Returns the sprite index for the skill icon sprite.
+	int getSkillIconSprite() const;
+	/// Gets the monthly salary of the soldier (for a given rank).
+	int getSalaryCost(int rank) const;
+	/// Gets the height of the soldier when it's standing.
+	int getStandHeight() const;
+	/// Gets the height of the soldier when it's kneeling.
+	int getKneelHeight() const;
+	/// Gets the elevation of the soldier when it's flying.
+	int getFloatHeight() const;
+	/// Gets the default-equipped armor.
+	Armor* getDefaultArmor() const;
+	/// Gets the armor for avatar display.
+	const std::string& getArmorForAvatar() const;
+	/// Gets the X offset used for avatar.
+	int getAvatarOffsetX() const;
+	/// Gets the Y offset used for avatar.
+	int getAvatarOffsetY() const;
+	/// Gets the flag offset.
+	int getFlagOffset() const;
+	/// Gets the special weapon.
+	const RuleItem* getSpecialWeapon() const { return _specWeapon; }
+	/// Gets the allow promotion flag.
+	bool getAllowPromotion() const;
+	/// Gets the allow piloting flag.
+	bool getAllowPiloting() const;
+
+	/// Gets the female appearance ratio.
+	int getFemaleFrequency() const;
+	/// Gets the soldier's male death sounds.
+	const std::vector<int> &getMaleDeathSounds() const;
+	/// Gets the soldier's female death sounds.
+	const std::vector<int> &getFemaleDeathSounds() const;
+	/// Gets the soldier's male panic sounds.
+	const std::vector<int> &getMalePanicSounds() const;
+	/// Gets the soldier's female panic sounds.
+	const std::vector<int> &getFemalePanicSounds() const;
+	/// Gets the soldier's male berserk sounds.
+	const std::vector<int> &getMaleBerserkSounds() const;
+	/// Gets the soldier's female berserk sounds.
+	const std::vector<int> &getFemaleBerserkSounds() const;
+	/// Gets the soldier's male "select unit" sounds.
+	const std::vector<int> &getMaleSelectUnitSounds() const { return _selectUnitSoundMale; }
+	/// Gets the soldier's female "select unit" sounds.
+	const std::vector<int> &getFemaleSelectUnitSounds() const { return _selectUnitSoundFemale; }
+	/// Gets the soldier's male "start moving" sounds.
+	const std::vector<int> &getMaleStartMovingSounds() const { return _startMovingSoundMale; }
+	/// Gets the soldier's female "start moving" sounds.
+	const std::vector<int> &getFemaleStartMovingSounds() const { return _startMovingSoundFemale; }
+	/// Gets the soldier's male "select weapon" sounds.
+	const std::vector<int> &getMaleSelectWeaponSounds() const { return _selectWeaponSoundMale; }
+	/// Gets the soldier's female "select weapon" sounds.
+	const std::vector<int> &getFemaleSelectWeaponSounds() const { return _selectWeaponSoundFemale; }
+	/// Gets the soldier's male "annoyed" sounds.
+	const std::vector<int> &getMaleAnnoyedSounds() const { return _annoyedSoundMale; }
+	/// Gets the soldier's female "annoyed" sounds.
+	const std::vector<int> &getFemaleAnnoyedSounds() const { return _annoyedSoundFemale; }
+
+	/// Gets the list of defined male voice sets.
+	const std::vector<const RuleVoiceSet*> &getVoiceSetsMaleRaw() const { return _voiceSetsMale; }
+	/// Gets a random male voice set.
+	const RuleVoiceSet* getRandomVoiceSetMale() const;
+	/// Gets the list of defined female voice sets.
+	const std::vector<const RuleVoiceSet*> &getVoiceSetsFemaleRaw() const { return _voiceSetsFemale; }
+	/// Gets a random female voice set.
+	const RuleVoiceSet* getRandomVoiceSetFemale() const;
+
+	/// Gets the list of defined voice sets.
+	const std::map<std::string, std::vector<const RuleVoiceSet*> > &getVoiceSetsRaw() const { return _voiceSets; }
+	/// Gets a random voice set.
+	const RuleVoiceSet* getRandomVoiceSet(const Soldier* s) const;
+
+	/// Gets the pool list for soldier names.
+	const std::vector<SoldierNamePool*> &getNames() const;
+	/// Gets the total weight of all the soldier name pools.
+	int getTotalSoldierNamePoolWeight() const { return _totalSoldierNamePoolWeight; }
+	/// Gets the value - for score calculation.
+	int getValue() const;
+	/// Gets the soldier's transfer time.
+	int getTransferTime() const;
+	/// Percentage modifier for morale loss when this unit is killed.
+	int getMoraleLossWhenKilled() const { return _moraleLossWhenKilled; };
+	/// Gets the list of StatStrings.
+	const std::vector<StatString *> &getStatStrings() const;
+	/// Gets the list of strings for ranks.
+	const std::vector<std::string> &getRankStrings() const;
+	/// Gets the offset of the rank sprite in BASEBITS.PCK.
+	int getRankSprite() const;
+	/// Gets the offset of the rank sprite in SMOKE.PCK.
+	int getRankSpriteBattlescape() const;
+	/// Gets the offset of the rank sprite in TinyRanks.
+	int getRankSpriteTiny() const;
+
+	/// Get all script values.
+	const ScriptValues<RuleSoldier> &getScriptValuesRaw() const { return _scriptValues; }
+
+	/// How much missing mana will act as "fatal wounds" and prevent the soldier from going into battle.
+	int getManaWoundThreshold() const { return _manaMissingWoundThreshold; }
+	/// How much missing health will act as "fatal wounds" and prevent the soldier from going into battle.
+	int getHealthWoundThreshold() const { return _healthMissingWoundThreshold; }
+#endif /* 0 */
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+%extend {
+	%newobject __str__;
+#endif
+	char *__str__() const {
+		char buffer[128];
+		snprintf(buffer, 128, "RuleSoldier(%s)@%p", self->getType().c_str(), self);
+		return strdup(buffer);
+	}
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+}
+#endif
+
+};
+
+JSConvertPtr(RuleSoldier);
+
+}  /* end of namespace OpenXcom */
+
