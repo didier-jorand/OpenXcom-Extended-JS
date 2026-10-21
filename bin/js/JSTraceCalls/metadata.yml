@@ -1,0 +1,7 @@
+name: "JSTraceCalls"
+version: "0.1"
+author: "D.Jorand"
+description: "Example of mod using the javascript engine, tracing all the call to callback functions"
+id: jstracecalls
+master: xcom1
+

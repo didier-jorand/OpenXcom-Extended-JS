@@ -1,0 +1,7 @@
+name: "JSTUStore1"
+version: "0.1"
+author: "D.Jorand"
+description: "Unit test of base stores"
+id: jstustore1
+master: xcom1
+

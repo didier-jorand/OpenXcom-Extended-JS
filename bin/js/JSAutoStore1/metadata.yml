@@ -1,0 +1,7 @@
+name: "JSAutoStore1"
+version: "0.1"
+author: "D.Jorand"
+description: "JS Scripting Demo - automatically refill the base store with Avalanche missiles if needed"
+id: jsautostore1
+master: xcom1
+
