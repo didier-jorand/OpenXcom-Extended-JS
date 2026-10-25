@@ -76,6 +76,11 @@ class CBObject {
 		if (!this._callbacks[trigger]) this._callbacks[trigger] = {};
 		if (!this._callbacks[trigger][step]) this._callbacks[trigger][step] = [];
 		this._callbacks[trigger][step].push(cb);
+
+		// Record that this callback is needed
+		let n = trigger + "_" + step + "_Needed";
+		this[n] = true;
+		//print("CBObject::registerCallback: " + trigger + "." + step + " is neeeded: " + this[n] + " (" + n + " " + this._callbacks[trigger][step].length + ")");
 	}
 
 	/// \public
@@ -116,6 +121,12 @@ class CBObject {
 		} else {
 			OpenXcom.JSLog(OpenXcom.LOG_WARNING, "CBObject::unregisterCallback: unknown callback for '" + trigger + "." + step + "' in " + this.constructor.name);
 		}
+
+		// Check if this callback is still needed
+		let n = trigger + "_" + step + "_Needed";
+		this[n] = (cbs.length >= 1);
+		//print("CBObject::unregisterCallback: " + trigger + "." + step + " is neeeded: " + this[n] + " (" + n + " " + cbs.length + ")");
+
 	}
 
 	/// \protected
