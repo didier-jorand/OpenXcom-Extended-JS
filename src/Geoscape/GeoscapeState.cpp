@@ -951,22 +951,26 @@ void GeoscapeState::time5Seconds()
 {
 	JSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
+	JSValueConst jsneeded = JS_UNDEFINED;
 	JSValue jsself, jssavedgame;
 	JSValue jsargs[3];
 	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
-		jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime5Seconds");
-		if (!JS_IsUndefined(jsm)) {
-			JSValue jsstep = js->NewInt(0);
-			jsself = js->ConvertGeoscapeStatePtr(this);
-			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
-			jsargs[0] = jsstep;
-			jsargs[1] = jsself;
-			jsargs[2] = jssavedgame;
-			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
-			js->FreeValue(jssavedgame);
-			js->FreeValue(jsself);
-			js->FreeValue(jsstep);
-			js->FreeValue(jsm);
+		jsneeded = js->GetProperty(js->GetGeoscapeStateObject(), "onTime5Seconds_0_Needed");
+		if (js->ToBool(jsneeded)) {
+			jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime5Seconds");
+			if (!JS_IsUndefined(jsm)) {
+				JSValue jsstep = js->NewInt(0);
+				jsself = js->ConvertGeoscapeStatePtr(this);
+				jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+				jsargs[0] = jsstep;
+				jsargs[1] = jsself;
+				jsargs[2] = jssavedgame;
+				(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+				js->FreeValue(jssavedgame);
+				js->FreeValue(jsself);
+				js->FreeValue(jsstep);
+				js->FreeValue(jsm);
+			}
 		}
 	}
 
@@ -1555,20 +1559,32 @@ bool DetectXCOMBase::operator()(const Ufo *ufo) const
 void GeoscapeState::time10Minutes()
 {
 	JSEngine *js = _game->getJSEngine();
-	JSValue m = JS_UNDEFINED;
+	JSValue jsm = JS_UNDEFINED;
+	JSValueConst jstemp = JS_UNDEFINED;
+	bool jsneeded0, jsneeded1;
 	JSValue jsself, jssavedgame;
 	JSValue jsargs[3];
+
 	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
-		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime10Minutes");
-		if (!JS_IsUndefined(m)) {
-			JSValue jsstep = js->NewInt(0);
-			jsself = js->ConvertGeoscapeStatePtr(this);
-			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
-			jsargs[0] = jsstep;
-			jsargs[1] = jsself;
-			jsargs[2] = jssavedgame;
-			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
-			js->FreeValue(jsstep);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime10Minutes_0_Needed");
+		jsneeded0 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime10Minutes_1_Needed");
+		jsneeded1 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		if (jsneeded0 || jsneeded1) {
+			jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime10Minutes");
+			if (!JS_IsUndefined(jsm)) {
+				jsself = js->ConvertGeoscapeStatePtr(this);
+				jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+				jsargs[1] = jsself;
+				jsargs[2] = jssavedgame;
+				if (jsneeded0) {
+					jsargs[0] = js->NewInt(0);
+					(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+					js->FreeValue(jsargs[0]);
+				}
+			}
 		}
 	}
 
@@ -1658,14 +1674,15 @@ void GeoscapeState::time10Minutes()
 	// Handle UFO re-targeting (i.e. hunting and escorting) logic
 	ufoHuntingAndEscorting();
 
-	if (js && !JS_IsUndefined(m)) {
-		JSValue jsstep = js->NewInt(1);
-		jsargs[0] = jsstep;
-		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+	if (js && !JS_IsUndefined(jsm)) {
+		if (jsneeded1) {
+			jsargs[0] = js->NewInt(1);
+			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsargs[0]);
+		}
 		js->FreeValue(jssavedgame);
 		js->FreeValue(jsself);
-		js->FreeValue(jsstep);
-		js->FreeValue(m);
+		js->FreeValue(jsm);
 	}
 }
 
@@ -1935,22 +1952,35 @@ bool GeoscapeState::processMissionSite(MissionSite *site)
 void GeoscapeState::time30Minutes()
 {
 	JSEngine *js = _game->getJSEngine();
-	JSValue m = JS_UNDEFINED;
+	JSValue jsm = JS_UNDEFINED;
+	JSValueConst jstemp = JS_UNDEFINED;
+	bool jsneeded0, jsneeded1;
 	JSValue jsself, jssavedgame;
 	JSValue jsargs[3];
+
 	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
-		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime30Minutes");
-		if (!JS_IsUndefined(m)) {
-			JSValue jsstep = js->NewInt(0);
-			jsself = js->ConvertGeoscapeStatePtr(this);
-			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
-			jsargs[0] = jsstep;
-			jsargs[1] = jsself;
-			jsargs[2] = jssavedgame;
-			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
-			js->FreeValue(jsstep);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime30Minutes_0_Needed");
+		jsneeded0 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime30Minutes_1_Needed");
+		jsneeded1 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		if (jsneeded0 || jsneeded1) {
+			jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime30Minutes");
+			if (!JS_IsUndefined(jsm)) {
+				jsself = js->ConvertGeoscapeStatePtr(this);
+				jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+				jsargs[1] = jsself;
+				jsargs[2] = jssavedgame;
+				if (jsneeded0) {
+					jsargs[0] = js->NewInt(0);
+					(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+					js->FreeValue(jsargs[0]);
+				}
+			}
 		}
 	}
+
 
 	// Decrease mission countdowns
 	for (auto* am : _game->getSavedGame()->getAlienMissions())
@@ -2142,14 +2172,15 @@ void GeoscapeState::time30Minutes()
 		}
 	);
 
-	if (js && !JS_IsUndefined(m)) {
-		JSValue jsstep = js->NewInt(1);
-		jsargs[0] = jsstep;
-		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+	if (js && !JS_IsUndefined(jsm)) {
+		if (jsneeded1) {
+			jsargs[0] = js->NewInt(1);
+			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsargs[0]);
+		}
 		js->FreeValue(jssavedgame);
 		js->FreeValue(jsself);
-		js->FreeValue(jsstep);
-		js->FreeValue(m);
+		js->FreeValue(jsm);
 	}
 }
 
@@ -2224,20 +2255,32 @@ void GeoscapeState::ufoDetection(Ufo* ufo, const std::vector<Craft*>* activeCraf
 void GeoscapeState::time1Hour()
 {
 	JSEngine *js = _game->getJSEngine();
-	JSValue m = JS_UNDEFINED;
+	JSValue jsm = JS_UNDEFINED;
+	JSValueConst jstemp = JS_UNDEFINED;
+	bool jsneeded0, jsneeded1;
 	JSValue jsself, jssavedgame;
 	JSValue jsargs[3];
+
 	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
-		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Hour");
-		if (!JS_IsUndefined(m)) {
-			JSValue jsstep = js->NewInt(0);
-			jsself = js->ConvertGeoscapeStatePtr(this);
-			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
-			jsargs[0] = jsstep;
-			jsargs[1] = jsself;
-			jsargs[2] = jssavedgame;
-			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
-			js->FreeValue(jsstep);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime1Hour_0_Needed");
+		jsneeded0 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime1Hour_1_Needed");
+		jsneeded1 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		if (jsneeded0 || jsneeded1) {
+			jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Hour");
+			if (!JS_IsUndefined(jsm)) {
+				jsself = js->ConvertGeoscapeStatePtr(this);
+				jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+				jsargs[1] = jsself;
+				jsargs[2] = jssavedgame;
+				if (jsneeded0) {
+					jsargs[0] = js->NewInt(0);
+					(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+					js->FreeValue(jsargs[0]);
+				}
+			}
 		}
 	}
 
@@ -2389,14 +2432,15 @@ void GeoscapeState::time1Hour()
 
 	updateSlackingIndicator();
 
-	if (js && !JS_IsUndefined(m)) {
-		JSValue jsstep = js->NewInt(1);
-		jsargs[0] = jsstep;
-		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+	if (js && !JS_IsUndefined(jsm)) {
+		if (jsneeded1) {
+			jsargs[0] = js->NewInt(1);
+			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsargs[0]);
+		}
 		js->FreeValue(jssavedgame);
 		js->FreeValue(jsself);
-		js->FreeValue(jsstep);
-		js->FreeValue(m);
+		js->FreeValue(jsm);
 	}
 }
 
@@ -2498,23 +2542,34 @@ void GeoscapeState::time1Day()
 	_game->getSavedGame()->increaseDaysPassed();
 
 	JSEngine *js = _game->getJSEngine();
-	JSValue m = JS_UNDEFINED;
+	JSValue jsm = JS_UNDEFINED;
+	JSValueConst jstemp = JS_UNDEFINED;
+	bool jsneeded0, jsneeded1;
 	JSValue jsself, jssavedgame;
 	JSValue jsargs[3];
+
 	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
-		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Day");
-		if (!JS_IsUndefined(m)) {
-			JSValue jsstep = js->NewInt(0);
-			jsself = js->ConvertGeoscapeStatePtr(this);
-			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
-			jsargs[0] = jsstep;
-			jsargs[1] = jsself;
-			jsargs[2] = jssavedgame;
-			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
-			js->FreeValue(jsstep);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime1Day_0_Needed");
+		jsneeded0 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime1Day_1_Needed");
+		jsneeded1 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		if (jsneeded0 || jsneeded1) {
+			jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Day");
+			if (!JS_IsUndefined(jsm)) {
+				jsself = js->ConvertGeoscapeStatePtr(this);
+				jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+				jsargs[1] = jsself;
+				jsargs[2] = jssavedgame;
+				if (jsneeded0) {
+					jsargs[0] = js->NewInt(0);
+					(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+					js->FreeValue(jsargs[0]);
+				}
+			}
 		}
 	}
-
 
 	SavedGame *saveGame = _game->getSavedGame();
 	Mod *mod = _game->getMod();
@@ -2977,14 +3032,15 @@ void GeoscapeState::time1Day()
 		}
 	}
 
-	if (js && !JS_IsUndefined(m)) {
-		JSValue jsstep = js->NewInt(1);
-		jsargs[0] = jsstep;
-		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+	if (js && !JS_IsUndefined(jsm)) {
+		if (jsneeded1) {
+			jsargs[0] = js->NewInt(1);
+			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsargs[0]);
+		}
 		js->FreeValue(jssavedgame);
 		js->FreeValue(jsself);
-		js->FreeValue(jsstep);
-		js->FreeValue(m);
+		js->FreeValue(jsm);
 	}
 }
 
@@ -2997,20 +3053,32 @@ void GeoscapeState::time1Month()
 	_game->getSavedGame()->addMonth();
 
 	JSEngine *js = _game->getJSEngine();
-	JSValue m = JS_UNDEFINED;
+	JSValue jsm = JS_UNDEFINED;
+	JSValueConst jstemp = JS_UNDEFINED;
+	bool jsneeded0, jsneeded1;
 	JSValue jsself, jssavedgame;
 	JSValue jsargs[3];
+
 	if (js && (!JS_IsUndefined(js->GetGeoscapeStateObject()))) {
-		m = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Month");
-		if (!JS_IsUndefined(m)) {
-			JSValue jsstep = js->NewInt(0);
-			jsself = js->ConvertGeoscapeStatePtr(this);
-			jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
-			jsargs[0] = jsstep;
-			jsargs[1] = jsself;
-			jsargs[2] = jssavedgame;
-			(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
-			js->FreeValue(jsstep);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime1Month_0_Needed");
+		jsneeded0 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		jstemp = js->GetProperty(js->GetGeoscapeStateObject(), "onTime1Month_1_Needed");
+		jsneeded1 = js->ToBool(jstemp);
+		js->FreeValue(jstemp);
+		if (jsneeded0 || jsneeded1) {
+			jsm = js->GetMethod(js->GetGeoscapeStateObject(), "onTime1Month");
+			if (!JS_IsUndefined(jsm)) {
+				jsself = js->ConvertGeoscapeStatePtr(this);
+				jssavedgame = js->ConvertSavedGamePtr(_game->getSavedGame());
+				jsargs[1] = jsself;
+				jsargs[2] = jssavedgame;
+				if (jsneeded0) {
+					jsargs[0] = js->NewInt(0);
+					(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+					js->FreeValue(jsargs[0]);
+				}
+			}
 		}
 	}
 
@@ -3056,14 +3124,15 @@ void GeoscapeState::time1Month()
 		}
 	}
 
-	if (js && !JS_IsUndefined(m)) {
-		JSValue jsstep = js->NewInt(1);
-		jsargs[0] = jsstep;
-		(void)js->CallMethod(m, js->GetGeoscapeStateObject(), 3, jsargs);
+	if (js && !JS_IsUndefined(jsm)) {
+		if (jsneeded1) {
+			jsargs[0] = js->NewInt(1);
+			(void)js->CallMethod(jsm, js->GetGeoscapeStateObject(), 3, jsargs);
+			js->FreeValue(jsargs[0]);
+		}
 		js->FreeValue(jssavedgame);
 		js->FreeValue(jsself);
-		js->FreeValue(jsstep);
-		js->FreeValue(m);
+		js->FreeValue(jsm);
 	}
 }
 

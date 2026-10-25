@@ -403,16 +403,21 @@ void Game::quit()
 #endif
 	_quit = true;
 
-	if (!JS_IsUndefined(_jsengine->GetGameObject())) {
-		JSValue jsm = _jsengine->GetMethod(_jsengine->GetGameObject(), "onQuit");
-		if (!JS_IsUndefined(jsm)) {
-			JSValue jsstep = _jsengine->NewInt(0);
-			JSValue jsself = _jsengine->ConvertGamePtr(this);
-			JSValue jsargs[2] = {jsstep, jsself};
-			(void)_jsengine->CallMethod(jsm, _jsengine->GetGameObject(), 2, jsargs);
-			_jsengine->FreeValue(jsself);
-			_jsengine->FreeValue(jsstep);
-			_jsengine->FreeValue(jsm);
+	JSValue jstemp = _jsengine->GetProperty(_jsengine->GetGameObject(), "onQuit_0_Needed");
+	bool jsneeded = _jsengine->ToBool(jstemp);
+	_jsengine->FreeValue(jstemp);
+	if (jsneeded) {
+		if (!JS_IsUndefined(_jsengine->GetGameObject())) {
+			JSValue jsm = _jsengine->GetMethod(_jsengine->GetGameObject(), "onQuit");
+			if (!JS_IsUndefined(jsm)) {
+				JSValue jsstep = _jsengine->NewInt(0);
+				JSValue jsself = _jsengine->ConvertGamePtr(this);
+				JSValue jsargs[2] = {jsstep, jsself};
+				(void)_jsengine->CallMethod(jsm, _jsengine->GetGameObject(), 2, jsargs);
+				_jsengine->FreeValue(jsself);
+				_jsengine->FreeValue(jsstep);
+				_jsengine->FreeValue(jsm);
+			}
 		}
 	}
 }
