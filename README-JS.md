@@ -2,6 +2,12 @@
 
 This is the 'README' for OpenXcom-Extended-JS, fork of OpenXcom-Extended.
 
+## Foreword ##
+
+This fork does not intend to be integrated in the main branch. It is just
+an experiment or, somehow, a different approach on how to
+modify (for programmers) and play the game.
+
 
 ## Introduction
 
@@ -11,8 +17,9 @@ is tested only on Linux for the time being. See [status](#status).
 OpenXcom-Extended-JS (OXCEJS in short) enhances the game by introducing
 a new type of extensions that can be written in Javascript.
 
-These extensions can be mod by themselves or scripts can be added
-to existing mod.
+These extensions can be modules by themselves or scripts can be added
+to existing mods
+
 A script implements callback functions that are called when predefined
 events occur in the game (like loading a saved game).
 
@@ -40,7 +47,7 @@ Additional cmake options:
 
 - `QUICKJS_INC`: path to quickjs.h and other includes (default: /usr/include/quickjs)
 - `QUICKJS_LIB`: path to libquickjs.a (default: /usr/lib64/quickjs)
-- `SWIG_EXECUTABLE`: path to the swig (swig-quickjs) executable
+- `SWIG_EXECUTABLE`: path to the `swig` (__swig-quickjs__) executable
 - `SWIG_DIR`: path to the swig libraries
 
 
@@ -53,11 +60,13 @@ Scripting is added to the game in mods, like any other module.
 A Mod can be made of scripts only or scripts can be integrated
 in existing mods with rulesets, resources, units, etc...
 
-When the mod is loaded, the scripts (any file with extension "js") will be run.
+When the mod is loaded, the scripts, that is any file with extension "js",
+will be run.
+
 Most of the time, it is expected that these scripts register functions to
 be called at some event in the execution of the game (see below).
 
-### Callbacks and Proxy Objects
+### Callbacks, Bridge Objects and Proxy Objects
 
 During the executation of the game, JS scripts are executed when some event occurs,
 provided the corresponding callback function has been registered.
@@ -94,23 +103,21 @@ the program classes and the proxy object ; in this case, it is the "jsSavedGame"
 Logic
 
 
-| -------------------------- | --------------------- | -------------------- |
 | Main program               | Bridge object         | Script               |
 | -------------------------- | --------------------- | -------------------- |
 | SavedGame::load  {         |                       |                      |
-|	// call the bridge object | | |
-|	js->getObject(..."jsSavedGame"|...) |||
-|	js->getMethod(..."onLoad"...) |||
-|	js->callMethod(...args=[1, this, filename]...) |||
-| ...                          | iterate on onLoad, step 1 | |
-| }                          | register method | |
+|	// call the bridge object |                      |                      |
+|	js->getObject(..."jsSavedGame"...) |             |                      |
+|	js->getMethod(..."onLoad"...) |                  |                      |
+|	js->callMethod(...args=[1, this, filename]...) | |                      |
+| ...                        | iterate on onLoad, step 1 |                  |
+| }                          | register method       |                      |
 |                            | ... call(...onLoadCompleted... 1, this, filename) | |
-|                            |    |  runs 'onLoadCompleted(...)' |
-| -------------------------- | --------------------- | -------------------- |
+|                            |                       |  runs 'onLoadCompleted(...)' |
 
 
 
-## Status
+## Implementation Status
 
 
 1. JS engine: in src/JS, created from Game constructor (src/Engine/Game.cpp), initialized when
@@ -153,7 +160,8 @@ trigger events:
 
 	- jsGame (onQuit)
 	- jsSavedGame (onNew, onDelete, onLoad, onQuit, onSpawnEvent)
-	- jsGeoscapeState (onTime5Seconds (and 10Minutes, 30Minutes, 1Hour, 1Day, 1Month)
+	- jsGeoscapeState (onTime5Seconds (and 10Minutes, 30Minutes, 1Hour, 1Day, 1Month))
+
 
 1. Examples and Demos (in bin/js/...)
 
@@ -161,6 +169,7 @@ trigger events:
 	the JS Engine and the loading of JS Mods)
 	- JSTraceCalls: callbacks that print a message (validate that
 	all callbacks can be reached in the chain C++&nbsp;instance&nbsp;->&nbsp;Bridge&nbsp;->&nbsp;Script)
+
 
 1. Tests (in bin/js/...)
 
