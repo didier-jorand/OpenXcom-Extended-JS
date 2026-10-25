@@ -32,6 +32,15 @@ public:
 
 	SDL_Color *getPalette();
 
+	/// Get the localized text.
+	LocalizedText tr(const std::string &id) const;
+	/// Get the localized text.
+	LocalizedText trAlt(const std::string &id, int alt) const;
+	/// Get the localized text.
+	LocalizedText tr(const std::string &id, unsigned n) const;
+	///Get the localized text.
+	//LocalizedText tr(const std::string &id, SoldierGender gender) const;
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 %extend {
 	%newobject __str__;
