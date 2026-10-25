@@ -52,8 +52,8 @@ public:
 
 	// Wraps many JS API functions
 	JSValue GetObject(const char *oname);
-	JSValue GetProperty(JSValue o, const char *pname);
-	JSValue GetMethod(JSValue o, const char *mname);
+	JSValue GetProperty(JSValueConst o, const char *pname);
+	JSValue GetMethod(JSValueConst o, const char *mname);
 	JSValue CallMethod(JSValue m, JSValueConst this_val, int argc, JSValueConst argv[]);
 	JSValue NewString(const char* v) { return JS_NewString(ctx, v); }
 	JSValue NewString(const std::string& v) { return JS_NewString(ctx, v.c_str()); }
@@ -66,6 +66,10 @@ public:
 	JSValue NewArray() { return JS_NewArray(ctx); }
 	JSValue DupValue(JSValue v) { return JS_DupValue(ctx, v); }
 	void FreeValue(JSValue v) { JS_FreeValue(ctx, v); }
+
+	bool ToBool(JSValueConst v) const { return JS_ToBool(ctx, v); }
+	int ToInt(JSValueConst v) const;
+
 
 	// OpenXcom related initialization and methods
 	bool Reset(Game *game); // Initialization of the JSEngine when the modules are loaded/refreshed
