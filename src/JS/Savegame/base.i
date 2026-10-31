@@ -368,7 +368,7 @@ public:
 	}
 
 
-	/// (JS Extension) This method checks if an item can be manufactured.
+	/// (JS Extension) This method checks if an item can be or is manufactured.
 	///
 	/// Two variants of this method: with RuleItem and with RuleManufacture
 	/// @param rule: defines the item to be manufactured
@@ -387,10 +387,19 @@ public:
 				break;
 			}
 		}
+		if (!allowed) {
+			for (auto* ongoing : self->getProductions()) {
+				if (ongoing->getRules() == rule) {
+					allowed = true;
+					break;
+				}
+			}
+		}
+
 		return allowed;
 	}
 
-	/// (JS Extension) This method checks if an item can be manufactured.
+	/// (JS Extension) This method checks if an item can be or is manufactured.
 	///
 	/// Two variants of this method: with RuleItem and with RuleManufacture
 	/// @param item: defines the item to be manufactured
@@ -403,20 +412,30 @@ public:
 		bool allowed = false;
 		std::vector<OpenXcom::RuleManufacture*> productions;
 		sg->getAvailableProductions(productions, game->getMod(), self, OpenXcom::MANU_FILTER_DEFAULT_SUPPLIES_OK);
-		OpenXcom::RuleManufacture* rule = nullptr;
 		for (auto rmi = productions.begin(); rmi != productions.end(); rmi++) {
 			if ((*rmi)->getProducedItems().find(item) != (*rmi)->getProducedItems().end()) {
 				allowed = true;
-				rule = *rmi;
 				break;
 			}
 		}
+		if (!allowed) {
+			for (auto* ongoing : self->getProductions()) {
+				auto* rmi = ongoing->getRules();
+				if (rmi->getProducedItems().find(item) != rmi->getProducedItems().end()) {
+					allowed = true;
+					break;
+				}
+			}
+		}
+
 		return allowed;
 	}
 
 	/// (JS Extension) This method generates a new production line
 	/// after checking if the item can be manufactured
 	/// and it there is enough worshop space and engineers.
+	///
+	/// It does not check if this item is not already in production.
 	///
 	/// Two variants of this method: with RuleItem and with RuleManufacture
 	/// @param rule: defines the item to be manufactured
@@ -466,6 +485,8 @@ public:
 	/// (JS Extension) This method generates a new production line
 	/// after checking if the item can be manufactured
 	/// and it there is enough worshop space and engineers.
+	///
+	/// It does not check if this item is not already in production.
 	///
 	/// Two variants of this method: with RuleItem and with RuleManufacture
 	///
