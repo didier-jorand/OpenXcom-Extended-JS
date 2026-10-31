@@ -236,6 +236,28 @@ class SavedGame extends CBObject {
 	}
 
 	/// \public
+	/// This method is called from SavedGame::load (special: no step, but called when the YAML data are loaded),
+	/// no code returned.
+	///
+	/// It is triggered when a saved game is loaded from disk, when the YAML data are fully prepared
+	/// and the SavedGame instance is "ready".
+	/// At this point, the method receives the YAML reader and can load its own data, from its
+	/// dedicated attribute in the Map object.
+	///
+	/// @param step Step in the calling method: always 0
+	/// @param self the SavedGame instance
+	/// @param filename Full path of the file to load from
+	/// @param reader the YAML reader object
+	///
+	/// It triggers all callbacks registered in object jsSavedGame with trigger="onLoadOwnData"
+	/// and step=0.
+	onLoadOwnData(step, self, filename, reader) {
+		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onLoadOwnData");
+		this.callCallbacks("onLoadOwnData", step, self, filename, reader);
+		return 0;
+	}
+
+	/// \public
 	/// This method is called from SavedGame::save (start of and end of), no code returned.
 	///
 	/// It is triggered when a saved game is saved to disk.
@@ -249,6 +271,28 @@ class SavedGame extends CBObject {
 	onSave(step, self, filename) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onSave");
 		this.callCallbacks("onSave", step, self, filename);
+		return 0;
+	}
+
+	/// \public
+	/// This method is called from SavedGame::save (special: no step, but called when the YAML data are ready),
+	/// no code returned.
+	///
+	/// It is triggered when a saved game is saved to disk, when the YAML data are fully prepared
+	/// and ready to be written to the file.
+	/// At this point, the method receives the YAML writer and can add its own data, by creating its
+	/// dedicated attribute in the Map object.
+	///
+	/// @param step Step in the calling method: always 0
+	/// @param self the SavedGame instance
+	/// @param filename Full path of the file to save into
+	/// @param writer the YAML writer object
+	///
+	/// It triggers all callbacks registered in object jsSavedGame with trigger="onSaveOwnData"
+	/// and step=0.
+	onSaveOwnData(step, self, filename, writer) {
+		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onSaveOwnData");
+		this.callCallbacks("onSaveOwnData", step, self, filename, writer);
 		return 0;
 	}
 
