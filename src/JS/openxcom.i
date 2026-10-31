@@ -66,6 +66,7 @@
 
 %include "typemaps.i"
 %include "std_string.i"
+%include <typemaps/std_string_view.swg>
 %include "std_vector.i"
 %include "std_map.i"
 
@@ -73,6 +74,7 @@
 #include <stdint.h>
 
 #include "Engine/Logger.h"
+#include "Engine/Yaml.h"
 #include "Engine/LocalizedText.h"
 #include "Engine/Language.h"
 #include "Engine/OptionInfo.h"
@@ -196,6 +198,7 @@ extern OpenXcom::Game *game; // global defined in main.cpp
 %}
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+%include "Engine/yaml.i"
 %include "Engine/localizedtext.i"
 %include "Engine/language.i"
 %include "Engine/options.i"

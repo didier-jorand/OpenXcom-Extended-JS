@@ -1,0 +1,7 @@
+name: "JSYAMLTest1"
+version: "0.1"
+author: "D.Jorand"
+description: "Test Wrappers for the YAML reader and writer"
+id: jsyamltest1
+master: xcom1
+

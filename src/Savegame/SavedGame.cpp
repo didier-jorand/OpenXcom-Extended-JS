@@ -765,6 +765,30 @@ void SavedGame::load(const std::string &filename, Mod *mod, Language *lang)
 
 	_scriptValues.load(reader, mod->getScriptGlobal());
 
+	// JS callback called here for the JS module to have the opportunity to
+	// load its own information from the saved file.
+	// This callback has 4 parameters:
+	// 1: step (=0), 2: saved-game instance, 3: the filename, 4: the reader instance
+	// Reuse jstemp, jsneeded0 from above
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		jstemp = _jsengine->GetProperty(_jsengine->GetSavedGameObject(), "onLoadOwnData_0_Needed");
+		jsneeded0 = _jsengine->ToBool(jstemp);
+		_jsengine->FreeValue(jstemp);
+		if (jsneeded0) {
+			JSValue jsm2 = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onLoadOwnData");
+			if (!JS_IsUndefined(jsm2)) {
+				JSValue jsargs2[4];
+				jsargs2[0] = _jsengine->NewInt(0);
+				jsargs2[1] = _jsengine->ConvertSavedGamePtr(this);
+				jsargs2[2] = _jsengine->NewString(filename);
+				jsargs2[3] = _jsengine->ConvertYamlNodeReaderPtr(&reader);
+				(void)_jsengine->CallMethod(jsm2, _jsengine->GetSavedGameObject(), 4, jsargs2);
+				for (int i=0; i<4; i++) _jsengine->FreeValue(jsargs2[i]);
+				_jsengine->FreeValue(jsm2);
+			}
+		}
+	}
+
 	if (!JS_IsUndefined(jsm)) {
 		if (jsneeded1) {
 			jsargs[0] = _jsengine->NewInt(1);
@@ -1007,6 +1031,31 @@ void SavedGame::save(const std::string &filename, Mod *mod) const
 	if (_battleGame)
 		_battleGame->save(writer["battleGame"]);
 	_scriptValues.save(writer.toBase(), mod->getScriptGlobal());
+
+
+	// JS callback called here for the JS module to have the opportunity to
+	// add its own information in the saved file.
+	// This callback has 4 parameters:
+	// 1: step (=0), 2: saved-game instance, 3: the filename, 4: the writer instance
+	// Reuse jstemp, jsneeded0 from above
+	if (!JS_IsUndefined(_jsengine->GetSavedGameObject())) {
+		jstemp = _jsengine->GetProperty(_jsengine->GetSavedGameObject(), "onSaveOwnData_0_Needed");
+		jsneeded0 = _jsengine->ToBool(jstemp);
+		_jsengine->FreeValue(jstemp);
+		if (jsneeded0) {
+			JSValue jsm2 = _jsengine->GetMethod(_jsengine->GetSavedGameObject(), "onSaveOwnData");
+			if (!JS_IsUndefined(jsm2)) {
+				JSValue jsargs2[4];
+				jsargs2[0] = _jsengine->NewInt(0);
+				jsargs2[1] = _jsengine->ConvertSavedGamePtr(this);
+				jsargs2[2] = _jsengine->NewString(filename);
+				jsargs2[3] = _jsengine->ConvertYamlNodeWriterPtr(&writer);
+				(void)_jsengine->CallMethod(jsm2, _jsengine->GetSavedGameObject(), 4, jsargs2);
+				for (int i=0; i<4; i++) _jsengine->FreeValue(jsargs2[i]);
+				_jsengine->FreeValue(jsm2);
+			}
+		}
+	}
 
 	// concatenate header + separator + body
 	// per yaml standard, "bare documents" in a yaml "stream" can be separated by either a "document end" or "directives end" marker line

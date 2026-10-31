@@ -26,6 +26,7 @@
 #include "../Engine/Logger.h"
 #include "../Engine/Options.h"
 #include "../Engine/LocalizedText.h"
+#include "../Engine/Yaml.h"
 #include "../Savegame/GameTime.h"
 
 #include "../Mod/Mod.h"
@@ -304,6 +305,18 @@ JSValue JSEngine::ConvertGeoscapeStatePtr(const GeoscapeState* ptr) {
 JSValue JSEngine::ConvertRuleEventPtr(const RuleEvent* ptr) {
 	extern JSValue JSConvertRuleEventPtr(JSContext *ctx, const RuleEvent *ptr);
 	return JSConvertRuleEventPtr(ctx, ptr);
+}
+
+namespace YAML {
+	extern JSValue JSConvertYamlNodeReaderPtr(JSContext *ctx, const YAML::YamlNodeReader *ptr);
+	extern JSValue JSConvertYamlNodeWriterPtr(JSContext *ctx, const YAML::YamlNodeWriter *ptr);
+}
+JSValue JSEngine::ConvertYamlNodeReaderPtr(const YAML::YamlNodeReader* ptr) {
+	return YAML::JSConvertYamlNodeReaderPtr(ctx, ptr);
+}
+
+JSValue JSEngine::ConvertYamlNodeWriterPtr(const YAML::YamlNodeWriter* ptr) {
+	return YAML::JSConvertYamlNodeWriterPtr(ctx, ptr);
 }
 
 

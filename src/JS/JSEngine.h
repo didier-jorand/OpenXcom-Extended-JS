@@ -30,6 +30,11 @@ class SavedGame;
 class GeoscapeState;
 class RuleEvent;
 
+namespace YAML {
+	class YamlNodeReader;
+	class YamlNodeWriter;
+}
+
 class JSEngine {
 public:
 	JSEngine() {
@@ -67,9 +72,20 @@ public:
 	JSValue DupValue(JSValue v) { return JS_DupValue(ctx, v); }
 	void FreeValue(JSValue v) { JS_FreeValue(ctx, v); }
 
+	bool IsString(JSValueConst v) const { return JS_IsString(v); }
+	bool IsArray(JSValueConst v) const { return JS_IsArray(ctx, v); }
+	bool IsObject(JSValueConst v) const { return JS_IsObject(v); }
+	bool IsNull(JSValueConst v) const { return JS_IsNull(v); }
+	bool IsUndefined(JSValueConst v) const { return JS_IsUndefined(v); }
+	bool IsBool(JSValueConst v) const { return JS_IsBool(v); }
+	bool IsNumber(JSValueConst v) const { return JS_IsNumber(v); }
+
+
 	bool ToBool(JSValueConst v) const { return JS_ToBool(ctx, v); }
 	int ToInt(JSValueConst v) const;
-
+	double ToDouble(JSValueConst v) const;
+	const char *ToCString(JSValueConst v) const { return JS_ToCString(ctx, v); }
+	void FreeCString(const char *p) { JS_FreeCString(ctx, p); }
 
 	// OpenXcom related initialization and methods
 	bool Reset(Game *game); // Initialization of the JSEngine when the modules are loaded/refreshed
@@ -86,6 +102,8 @@ public:
 	JSValue ConvertSavedGamePtr(const SavedGame* ptr);
 	JSValue ConvertGeoscapeStatePtr(const GeoscapeState* ptr);
 	JSValue ConvertRuleEventPtr(const RuleEvent* ptr);
+	JSValue ConvertYamlNodeReaderPtr(const YAML::YamlNodeReader *ptr);
+	JSValue ConvertYamlNodeWriterPtr(const YAML::YamlNodeWriter *ptr);
 
 protected:
 	bool DisposeEngine();
