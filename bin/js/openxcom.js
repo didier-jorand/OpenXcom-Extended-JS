@@ -180,7 +180,11 @@ var jsGame = new Game();
 /// - onNew: triggered when a new game is created (at end).
 /// - onDelete: triggered when the game is deleted (at start).
 /// - onLoad: triggered when a game is loaded (at start and at end).
+/// - onLoadOwnData: triggered when loading from a file, when the YAML data are loaded,
+/// giving the module the opportunity to load its own data.
 /// - onSave: triggered when the game is saved (at start and at end).
+/// - onSaveOwnData: triggered when saving to a file, when the YAML data are ready,
+/// giving the module the opportunity to add its own data to be saved.
 class SavedGame extends CBObject {
 	constructor() {
 		super();
