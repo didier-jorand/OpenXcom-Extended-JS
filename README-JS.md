@@ -60,7 +60,7 @@ Scripting is added to the game in mods, like any other module.
 A Mod can be made of scripts only or scripts can be integrated
 in existing mods with rulesets, resources, units, etc...
 
-When the mod is loaded, the scripts, that is any file with extension "js",
+When the mod is loaded, the scripts, that is "any file with extension 'js'",
 will be run.
 
 Most of the time, it is expected that these scripts register functions to
@@ -152,6 +152,8 @@ mod are loaded (src/Engine/Mod.cpp) and, propagated to SavedGame (src/Savegame/S
 		- Soldier + rule
 		- Transfer
 	- GeoscapeState
+	- YAML::YamlNodeReader
+	- YAML::YamlNodeWriter
 	- ...
 
 
@@ -175,6 +177,8 @@ trigger events:
 
 	- JSTW{class}: test the wrappers of this class
 	- JSTU{test}: unit test, can be on any functionality
+	- JSYAMLTest1: unit test, can read/write YAML data
+	- JSYAMLTest2: unit test, can save/load YAML data from the game save files
 
 
 1. Documentation
