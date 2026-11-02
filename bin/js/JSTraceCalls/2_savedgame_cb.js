@@ -32,8 +32,16 @@
 			print("(tc) SavedGame.onLoad", step, self, filename);
 			return 0;
 		},
+		onLoadOwnData: function (step, self, filename, reader) {
+			print("(tc) SavedGame.onLoadOwnData", step, self, filename, reader);
+			return 0;
+		},
 		onSave: function (step, self, filename) {
 			print("(tc) SavedGame.onSave", step, self, filename);
+			return 0;
+		},
+		onSaveOwnData: function (step, self, filename, writer) {
+			print("(tc) SavedGame.onSaveOwnData", step, self, filename, writer);
 			return 0;
 		},
 		onSpawnEvent: function (step, self, event) {
@@ -47,7 +55,9 @@
 	jsSavedGame.registerCallback("onDelete", 0, saved_game.onDelete);
 	jsSavedGame.registerCallback("onLoad", 0, saved_game.onLoad);
 	jsSavedGame.registerCallback("onLoad", 1, saved_game.onLoad);
+	jsSavedGame.registerCallback("onLoadOwnData", 0, saved_game.onLoadOwnData);
 	jsSavedGame.registerCallback("onSave", 0, saved_game.onSave);
 	jsSavedGame.registerCallback("onSave", 1, saved_game.onSave);
+	jsSavedGame.registerCallback("onSaveOwnData", 0, saved_game.onSaveOwnData);
 	jsSavedGame.registerCallback("onSpawnEvent", 1, saved_game.onSpawnEvent);
 })();
