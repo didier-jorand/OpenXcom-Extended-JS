@@ -47,9 +47,10 @@
 				print(level + "],");
 			} else if (node.hasVal()) {
 				print(level + node.key() + ": " + node.val());
-			} else {
-				print("??????????????????");
 			}
+			//else {
+			// empty node
+			//}
 		},
 
 
