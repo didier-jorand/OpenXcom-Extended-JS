@@ -21,8 +21,12 @@
 #include <string>
 #include <SDL.h>
 
+namespace JS { class OXCEJSEngine; }
+
 namespace OpenXcom
 {
+
+using namespace JS;
 
 class State;
 class Screen;
@@ -34,7 +38,6 @@ class ModInfo;
 class FpsCounter;
 class Action;
 class GeoscapeState;
-class JSEngine;
 
 /**
  * The core of the game engine, manages the game's entire contents and structure.
@@ -60,7 +63,7 @@ private:
 	bool _ctrl, _alt, _shift, _rmb, _mmb;
 	int _scrollStep;
 	static const double VOLUME_GRADIENT;
-	JSEngine *_jsengine;
+	JS::OXCEJSEngine *_jsengine;
 
 public:
 	/// Creates a new game and initializes SDL.
@@ -98,7 +101,7 @@ public:
 	/// Loads the mods specified in the game options.
 	void loadMods();
 	/// Get the Javascript Engine
-	JSEngine *getJSEngine() const { return _jsengine; }
+	OXCEJSEngine *getJSEngine() const { return _jsengine; }
 	/// Sets whether the mouse cursor is activated.
 	void setMouseActive(bool active);
 	/// Returns whether current state is the param state

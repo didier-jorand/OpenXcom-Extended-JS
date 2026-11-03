@@ -22,18 +22,8 @@
 #include <quickjs-libc.h>
 
 
-namespace OpenXcom
+namespace JS
 {
-class Game;
-class Mod;
-class SavedGame;
-class GeoscapeState;
-class RuleEvent;
-
-namespace YAML {
-	class YamlNodeReader;
-	class YamlNodeWriter;
-}
 
 class JSEngine {
 public:
@@ -41,16 +31,11 @@ public:
 		rt = NULL;
 		ctx = NULL;
 		strict = false;
-
-		_game = nullptr;
-		_mod = nullptr;
-
-		_jsGame = JS_UNDEFINED;
-		_jsSavedGame = JS_UNDEFINED;
-		_jsGeoscapeState = JS_UNDEFINED;
 	}
-	~JSEngine();
-	bool InitializeEngine();
+	virtual ~JSEngine() { DisposeEngine(); };
+
+	virtual bool InitializeEngine();
+
 	bool RunScript(const std::string &scriptPath);
 	JSRuntime *get_runtime() const {return rt;}
 	JSContext *get_context() const {return ctx;}
@@ -87,44 +72,15 @@ public:
 	const char *ToCString(JSValueConst v) const { return JS_ToCString(ctx, v); }
 	void FreeCString(const char *p) { JS_FreeCString(ctx, p); }
 
-	// OpenXcom related initialization and methods
-	bool Reset(Game *game); // Initialization of the JSEngine when the modules are loaded/refreshed
-	bool BeginModLoad(Mod *mod);
-
-	// Get bridge objects to be used in methods triggering callbacks
-	JSValueConst GetGameObject() const { return _jsGame; };
-	JSValueConst GetSavedGameObject() const { return _jsSavedGame; };
-	JSValueConst GetGeoscapeStateObject() const { return _jsGeoscapeState; };
-
-	// Object conversion, to use as 'self' parameter in callbacks
-	JSValue ConvertGamePtr(const Game* ptr);
-	JSValue ConvertModPtr(const Mod* ptr);
-	JSValue ConvertSavedGamePtr(const SavedGame* ptr);
-	JSValue ConvertGeoscapeStatePtr(const GeoscapeState* ptr);
-	JSValue ConvertRuleEventPtr(const RuleEvent* ptr);
-	JSValue ConvertYamlNodeReaderPtr(const YAML::YamlNodeReader *ptr);
-	JSValue ConvertYamlNodeWriterPtr(const YAML::YamlNodeWriter *ptr);
-
 protected:
-	bool DisposeEngine();
+	virtual bool DisposeEngine();
 
-private:
 	bool EvalBuffer(const char *buf, int buf_len, const char *filename, int eval_flags);
 	bool EvalFile(const char *filename, int module);
 
 	JSRuntime *rt;
 	JSContext *ctx;
 	bool strict;
-
-	// Global
-	Game *_game;
-	Mod *_mod;
-
-	// Reference to the JS values for "call exits" (Game, SavedGame, etc...)
-	JSValue _jsGame;
-	JSValue _jsSavedGame;
-	JSValue _jsGeoscapeState;
-
 };
 
 }

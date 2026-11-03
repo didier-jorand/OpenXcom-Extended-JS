@@ -21,31 +21,24 @@
 #include <stdbool.h>
 #include <string>
 
-#include "JSEngine.h"
-
+#include "QJSEngine.h"
 #include "../Engine/Logger.h"
-#include "../Engine/Options.h"
-#include "../Engine/LocalizedText.h"
-#include "../Engine/Yaml.h"
-#include "../Savegame/GameTime.h"
 
-#include "../Mod/Mod.h"
-#include "../Mod/RuleEvent.h"
 
-#include "../Engine/Game.h"
-#include "../Savegame/SavedGame.h"
+using OpenXcom::SeverityLevel;
+using OpenXcom::LOG_ERROR;
+using OpenXcom::LOG_WARNING;
+using OpenXcom::LOG_INFO;
+using OpenXcom::LOG_DEBUG;
+using OpenXcom::LOG_VERBOSE;
 
-#include "../Geoscape/GeoscapeState.h"
+using OpenXcom::Logger;
 
 
 extern "C" {
 /*
  * "C" functions to interface the QuickJS engine
  */
-
-/* from swig module 'openxcom' */
-extern JSModuleDef *js_init_module(JSContext *ctx, const char *module_name);
-
 
 /* Create a JS context and load the standard modules, also used to initialize the worker context */
 static JSContext *QuickJS_NewCustomContext(JSRuntime *rt)
@@ -58,20 +51,12 @@ static JSContext *QuickJS_NewCustomContext(JSRuntime *rt)
     js_init_module_std(ctx, "std");
     js_init_module_os(ctx, "os");
 
-    /* openxcom module */
-	js_init_module(ctx, "openxcom");
-
     return ctx;
 }
 
 } /* extern "C" */
 
-namespace OpenXcom {
-
-JSEngine::~JSEngine() {
-	DisposeEngine();
-}
-
+namespace JS {
 
 bool JSEngine::InitializeEngine() {
 	DisposeEngine();
@@ -98,15 +83,10 @@ bool JSEngine::InitializeEngine() {
 
 	js_std_add_helpers(ctx, 0, NULL);
 
-	// The global variable 'openxcon' is set as the namespace 'OpenXcom', which
-	// is included in the openxcom module.
 	const char *str = "import * as std from 'std';\n"
             "import * as os from 'os';\n"
-            "import * as openxcom from 'openxcom';\n"
             "globalThis.std = std;\n"
-            "globalThis.os = os;\n"
-            "globalThis.openxcom = openxcom.openxcom;\n"
-            "globalThis.OpenXcom = openxcom.openxcom.OpenXcom;\n";
+            "globalThis.os = os;\n";
 	if (!EvalBuffer(str, strlen(str), "<input>", JS_EVAL_TYPE_MODULE)) {
 		return false;
 	}
@@ -117,12 +97,6 @@ bool JSEngine::InitializeEngine() {
 
 
 bool JSEngine::DisposeEngine() {
-	if (ctx) {
-		JS_FreeValue(ctx, _jsGame);
-		JS_FreeValue(ctx, _jsSavedGame);
-		JS_FreeValue(ctx, _jsGeoscapeState);
-	}
-
 	if (rt) {
 		js_std_free_handlers(rt);
 	}
@@ -137,71 +111,6 @@ bool JSEngine::DisposeEngine() {
 	return true;
 }
 
-bool JSEngine::Reset(Game *game) {
-	// A game is started or its list of mod is reset.
-	// We need to recreate the JS context in order to reload only
-	// the requested mods.
-	if (!InitializeEngine()) return false;
-
-	_game = game;
-	JSValue wgame = ConvertGamePtr(game);
-	JSValue globalObject = JS_GetGlobalObject(ctx);
-	JSValue oxc = JS_GetPropertyStr(ctx, globalObject, "openxcom");
-	JS_FreeValue(ctx, globalObject);
-	if (JS_IsException(oxc)) {
-		Log(LOG_DEBUG) << "JSEngine::Reset: failed to fetch 'openxcom' module";
-		js_std_dump_error(ctx);
-		return false;
-	}
-	int r = JS_SetPropertyStr(ctx, oxc, "game", wgame);
-	JS_FreeValue(ctx, oxc);
-	if (r == -1) {
-		Log(LOG_DEBUG) << "JSEngine::Reset: failed to store the 'game' wrapper object";
-		js_std_dump_error(ctx);
-		return false;
-	}
-
-	// Load the Javascript "main" file (openxcom.js)
-	// It is mod independent, therefore, it is loaded before the mods
-	// are loaded, to provide the callback "infrastructure" beforehand.
-	Options::setDataFolder(CrossPlatform::dirFilename(CrossPlatform::searchDataFolder("js")));
-
-	Log(LOG_INFO) << "jsengine: loading main script: " << Options::getDataFolder() + "js/openxcom.js";
-	RunScript(Options::getDataFolder() + "js/openxcom.js");
-
-	// Get the bridge objects (Game, SaveGame, GeoscapeState...), as these implement the
-	// JS methods to be called from the instance triggering an event
-	// XXX Should be in openxcom namespace ? (openxcom.jsGame, etc...)
-	_jsGame = GetObject("jsGame");
-	if (JS_IsUndefined(_jsGame)) { Log(LOG_WARNING) << "jsengine: jsGame object not found"; }
-	_jsSavedGame = GetObject("jsSavedGame");
-	if (JS_IsUndefined(_jsSavedGame)) { Log(LOG_WARNING) << "jsengine: jsSavedGame object not found"; }
-	_jsGeoscapeState = GetObject("jsGeoscapeState");
-	if (JS_IsUndefined(_jsGeoscapeState)) { Log(LOG_WARNING) << "jsengine: jsGeoscapeState object not found"; }
-
-	return true;
-}
-
-bool JSEngine::BeginModLoad(Mod *mod) {
-	_mod = mod;
-	JSValue wmod = ConvertModPtr(mod);
-	JSValue globalObject = JS_GetGlobalObject(ctx);
-	JSValue oxc = JS_GetPropertyStr(ctx, globalObject, "openxcom");
-	JS_FreeValue(ctx, globalObject);
-	if (JS_IsException(oxc)) {
-		Log(LOG_DEBUG) << "JSEngine::BeginModLoad: failed to fetch 'openxcom' module";
-		js_std_dump_error(ctx);
-		return false;
-	}
-	int r = JS_SetPropertyStr(ctx, oxc, "mod", wmod);
-	JS_FreeValue(ctx, oxc);
-	if (r == -1) {
-		Log(LOG_DEBUG) << "JSEngine::BeginModLoad: failed to store the 'mod' wrapper object";
-		js_std_dump_error(ctx);
-		return false;
-	}
-	return true;
-}
 
 JSValue JSEngine::GetObject(const char *oname) {
 	Log(LOG_DEBUG) << "JSEngine::GetObject(" << oname << ")";
@@ -279,44 +188,6 @@ JSValue JSEngine::CallMethod(JSValue m, JSValueConst this_val, int argc, JSValue
 	}
 	Log(LOG_VERBOSE) << "JSEngine::CallMethod(): success";
     return r;
-}
-
-
-JSValue JSEngine::ConvertGamePtr(const Game* ptr) {
-	extern JSValue JSConvertGamePtr(JSContext *ctx, const Game *ptr);
-	return JSConvertGamePtr(ctx, ptr);
-}
-
-JSValue JSEngine::ConvertModPtr(const Mod* ptr) {
-	extern JSValue JSConvertModPtr(JSContext *ctx, const Mod *ptr);
-	return JSConvertModPtr(ctx, ptr);
-}
-
-JSValue JSEngine::ConvertSavedGamePtr(const SavedGame* ptr) {
-	extern JSValue JSConvertSavedGamePtr(JSContext *ctx, const SavedGame *ptr);
-	return JSConvertSavedGamePtr(ctx, ptr);
-}
-
-JSValue JSEngine::ConvertGeoscapeStatePtr(const GeoscapeState* ptr) {
-	extern JSValue JSConvertGeoscapeStatePtr(JSContext *ctx, const GeoscapeState *ptr);
-	return JSConvertGeoscapeStatePtr(ctx, ptr);
-}
-
-JSValue JSEngine::ConvertRuleEventPtr(const RuleEvent* ptr) {
-	extern JSValue JSConvertRuleEventPtr(JSContext *ctx, const RuleEvent *ptr);
-	return JSConvertRuleEventPtr(ctx, ptr);
-}
-
-namespace YAML {
-	extern JSValue JSConvertYamlNodeReaderPtr(JSContext *ctx, const YAML::YamlNodeReader *ptr);
-	extern JSValue JSConvertYamlNodeWriterPtr(JSContext *ctx, const YAML::YamlNodeWriter *ptr);
-}
-JSValue JSEngine::ConvertYamlNodeReaderPtr(const YAML::YamlNodeReader* ptr) {
-	return YAML::JSConvertYamlNodeReaderPtr(ctx, ptr);
-}
-
-JSValue JSEngine::ConvertYamlNodeWriterPtr(const YAML::YamlNodeWriter* ptr) {
-	return YAML::JSConvertYamlNodeWriterPtr(ctx, ptr);
 }
 
 

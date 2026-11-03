@@ -53,7 +53,7 @@
 #include "../fmath.h"
 #include "../Engine/RNG.h"
 #include "../Engine/Options.h"
-#include "../JS/JSEngine.h"
+#include "../JS/OXCEQJSEngine.h"
 #include "../Battlescape/Pathfinding.h"
 #include "RuleCountry.h"
 #include "RuleRegion.h"
@@ -423,7 +423,7 @@ public:
 /**
  * Creates an empty mod.
  */
-Mod::Mod(JSEngine *js) :
+Mod::Mod(OXCEJSEngine *js) :
 	_inventoryOverlapsPaperdoll(false),
 	_maxViewDistance(20), _maxDarknessToSeeUnits(9), _maxStaticLightDistance(16), _maxDynamicLightDistance(24), _enhancedLighting(0),
 	_costHireEngineer(0), _costHireScientist(0),

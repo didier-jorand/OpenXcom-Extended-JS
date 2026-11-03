@@ -454,7 +454,8 @@ endif()
 
 
 set ( js_src
-  JS/JSEngine.cpp
+  JS/QJSEngine.cpp
+  JS/OXCEQJSEngine.cpp
 )
 
 set ( cxx_src

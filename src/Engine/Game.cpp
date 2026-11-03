@@ -44,10 +44,12 @@
 #include "../Geoscape/GeoscapeState.h"
 #include "../Menu/TestState.h"
 #include "../fallthrough.h"
-#include "../JS/JSEngine.h"
+#include "../JS/OXCEQJSEngine.h"
 
 namespace OpenXcom
 {
+
+using namespace JS;
 
 const double Game::VOLUME_GRADIENT = 10.0;
 
@@ -105,7 +107,7 @@ Game::Game(const std::string &title) : _screen(0), _cursor(0), _lang(0), _save(0
 	_lang = new Language();
 
 	// Initialize the Javascript Engine
-	_jsengine = new JSEngine();
+	_jsengine = new OXCEJSEngine();
 
 	_timeOfLastFrame = 0;
 }

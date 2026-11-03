@@ -39,7 +39,7 @@
 #include "../Interface/Text.h"
 #include "../Interface/TextButton.h"
 #include "../Engine/Timer.h"
-#include "../JS/JSEngine.h"
+#include "../JS/OXCEQJSEngine.h"
 #include "../Savegame/GameTime.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Base.h"
@@ -949,7 +949,7 @@ const std::vector<Craft*>* GeoscapeState::updateActiveCrafts()
  */
 void GeoscapeState::time5Seconds()
 {
-	JSEngine *js = _game->getJSEngine();
+	OXCEJSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
 	JSValueConst jsneeded = JS_UNDEFINED;
 	JSValue jsself, jssavedgame;
@@ -1558,7 +1558,7 @@ bool DetectXCOMBase::operator()(const Ufo *ufo) const
  */
 void GeoscapeState::time10Minutes()
 {
-	JSEngine *js = _game->getJSEngine();
+	OXCEJSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
 	JSValueConst jstemp = JS_UNDEFINED;
 	bool jsneeded0, jsneeded1;
@@ -1951,7 +1951,7 @@ bool GeoscapeState::processMissionSite(MissionSite *site)
  */
 void GeoscapeState::time30Minutes()
 {
-	JSEngine *js = _game->getJSEngine();
+	OXCEJSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
 	JSValueConst jstemp = JS_UNDEFINED;
 	bool jsneeded0, jsneeded1;
@@ -2254,7 +2254,7 @@ void GeoscapeState::ufoDetection(Ufo* ufo, const std::vector<Craft*>* activeCraf
  */
 void GeoscapeState::time1Hour()
 {
-	JSEngine *js = _game->getJSEngine();
+	OXCEJSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
 	JSValueConst jstemp = JS_UNDEFINED;
 	bool jsneeded0, jsneeded1;
@@ -2541,7 +2541,7 @@ void GeoscapeState::time1Day()
 {
 	_game->getSavedGame()->increaseDaysPassed();
 
-	JSEngine *js = _game->getJSEngine();
+	OXCEJSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
 	JSValueConst jstemp = JS_UNDEFINED;
 	bool jsneeded0, jsneeded1;
@@ -3052,7 +3052,7 @@ void GeoscapeState::time1Month()
 {
 	_game->getSavedGame()->addMonth();
 
-	JSEngine *js = _game->getJSEngine();
+	OXCEJSEngine *js = _game->getJSEngine();
 	JSValue jsm = JS_UNDEFINED;
 	JSValueConst jstemp = JS_UNDEFINED;
 	bool jsneeded0, jsneeded1;

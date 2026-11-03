@@ -32,7 +32,7 @@
 #include "../Engine/Options.h"
 #include "../Engine/CrossPlatform.h"
 #include "../Engine/ScriptBind.h"
-#include "../JS/JSEngine.h"
+#include "../JS/OXCEQJSEngine.h"
 #include "SavedBattleGame.h"
 #include "SerializationHelper.h"
 #include "GameTime.h"
@@ -102,7 +102,7 @@ bool haveReserchVector(const std::vector<const RuleResearch*> &vec, const RuleRe
 /**
  * Initializes a brand new saved game according to the specified difficulty.
  */
-SavedGame::SavedGame(JSEngine *js) :
+SavedGame::SavedGame(OXCEJSEngine *js) :
 	_difficulty(DIFF_BEGINNER), _end(END_NONE), _ironman(false), _globeLon(0.0), _globeLat(0.0), _globeZoom(0),
 	_battleGame(0), _previewBase(nullptr), _debug(false), _warned(false),
 	_togglePersonalLight(true), _toggleNightVision(false), _toggleBrightness(0),

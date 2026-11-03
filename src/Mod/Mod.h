@@ -35,8 +35,12 @@
 #include "RuleBaseFacilityFunctions.h"
 #include "RuleItem.h"
 
+namespace JS { class OXCEJSEngine; }
+
 namespace OpenXcom
 {
+
+using namespace JS;
 
 class Surface;
 class SurfaceSet;
@@ -49,7 +53,6 @@ class CatFile;
 class GMCatFile;
 class Music;
 class Palette;
-class JSEngine;
 class SavedGame;
 class Soldier;
 class RuleCountry;
@@ -358,7 +361,7 @@ private:
 	size_t _soundOffsetBattle = 0;
 	size_t _soundOffsetGeo = 0;
 
-	JSEngine *_jsengine; // javascript engine
+	OXCEJSEngine *_jsengine; // javascript engine
 
 	/// Loads a ruleset from a YAML file that have basic resources configuration.
 	void loadResourceConfigFile(const FileMap::FileRecord &filerec);
@@ -489,7 +492,7 @@ public:
 	static void ScriptRegister(ScriptParserBase* parser);
 
 	/// Creates a blank mod.
-	Mod(JSEngine *js);
+	Mod(OXCEJSEngine *js);
 	/// Cleans up the mod.
 	~Mod();
 
@@ -497,7 +500,7 @@ public:
 	const std::map<std::string, int> &getUfopaediaSections() const { return _ufopaediaSections; }
 
 	/// Get the Javascript Engine
-	JSEngine *getJSEngine() const { return _jsengine; }
+	OXCEJSEngine *getJSEngine() const { return _jsengine; }
 	/// Gets a particular font.
 	Font *getFont(const std::string &name, bool error = true) const;
 	/// Gets a particular surface.
