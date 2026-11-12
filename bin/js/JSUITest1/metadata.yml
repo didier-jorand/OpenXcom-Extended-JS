@@ -1,0 +1,7 @@
+name: "JSUITest1"
+version: "0.1"
+author: "D.Jorand"
+description: "Test UI created from JS with UI Wrappers"
+id: jsuitest1
+master: xcom1
+

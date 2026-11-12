@@ -428,8 +428,8 @@
 				}
 			}
 
-			// at the end of the process, if we have engineers remaining available, we switch them to the
-			// fallback production (if any)
+			// at the end of the process, if we have engineers and workspace remaining available, we switch
+			// them to the fallback production (if any)
 			let avail_engineers = base.getAvailableEngineers();
 			let avail_workspace = base.getAvailableWorkshops() - base.getUsedWorkshops();
 			let avail = Math.min(avail_engineers, avail_workspace);

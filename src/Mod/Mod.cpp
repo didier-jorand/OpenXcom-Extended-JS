@@ -53,7 +53,7 @@
 #include "../fmath.h"
 #include "../Engine/RNG.h"
 #include "../Engine/Options.h"
-#include "../JS/OXCEQJSEngine.h"
+#include "../JS/JSEngine/OXCEQJSEngine.h"
 #include "../Battlescape/Pathfinding.h"
 #include "RuleCountry.h"
 #include "RuleRegion.h"

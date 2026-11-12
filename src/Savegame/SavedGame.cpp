@@ -32,7 +32,7 @@
 #include "../Engine/Options.h"
 #include "../Engine/CrossPlatform.h"
 #include "../Engine/ScriptBind.h"
-#include "../JS/OXCEQJSEngine.h"
+#include "../JS/JSEngine/OXCEQJSEngine.h"
 #include "SavedBattleGame.h"
 #include "SerializationHelper.h"
 #include "GameTime.h"

@@ -26,6 +26,7 @@ set ( QUICKJS_INC "/usr/include/quickjs" CACHE STRING "Where to find quickjs.h" 
 set ( QUICKJS_LIB "/usr/lib64/quickjs" CACHE STRING "Where to find libquickjs.a" )
 set ( SWIG_EXECUTABLE "" CACHE STRING "Where to find swig executable" )
 set ( SWIG_DIR "" CACHE STRING "Where to find swig directory" )
+option ( JSUI "Enable UI widgets in JS (states, buttons, etc...)" OFF )
 
 if ( CHECK_CCACHE )
   find_program( CCACHE_PROGRAM ccache )

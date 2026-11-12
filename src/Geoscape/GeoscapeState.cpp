@@ -39,7 +39,7 @@
 #include "../Interface/Text.h"
 #include "../Interface/TextButton.h"
 #include "../Engine/Timer.h"
-#include "../JS/OXCEQJSEngine.h"
+#include "../JS/JSEngine/OXCEQJSEngine.h"
 #include "../Savegame/GameTime.h"
 #include "../Savegame/SavedGame.h"
 #include "../Savegame/Base.h"

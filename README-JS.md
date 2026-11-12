@@ -50,6 +50,9 @@ Additional cmake options:
 - `SWIG_EXECUTABLE`: path to the `swig` (__swig-quickjs__) executable
 - `SWIG_DIR`: path to the swig libraries
 
+CMake "recommended" command line:
+
+`cmake -DSWIG_DIR=$HOME/Projects/swig-quickjs/Lib -DSWIG_EXECUTABLE=$HOME/Projects/swig-quickjs/swig -DDEV_BUILD=OFF -DQUICKJS_INC=$HOME/Projects/quickjs-2026-06-04/ -DQUICKJS_LIB=$HOME/Projects/quickjs-2026-06-04/ -DJSUI=ON ..`
 
 ## Principles
 
@@ -79,7 +82,7 @@ Example of a callback when a game is loaded from file
 ```javascript
 	function onLoadCompleted(step, self, filename) {
 		print("Saved game " + self.getName() + " has been loaded from " + filename);
-		return 0;
+		return false;
 	}
 
 	jsSavedGame.registerCallback("onLoad", 1, onLoadCompleted);
@@ -99,6 +102,11 @@ in the program
 
 The function has to be registered into the object that make the bridge between
 the program classes and the proxy object ; in this case, it is the "jsSavedGame" object.
+
+The function may return a boolean value, `true` meaning that the callback has taken
+control of the method and the game code will not be run. For instance, if a callback
+onQuit, acivated when the game is requested to exit, returns `true`, the exit operation
+is cancelled.
 
 Logic
 
@@ -122,7 +130,9 @@ Logic
 
 1. JS engine: in src/JS, created from Game constructor (src/Engine/Game.cpp), initialized when
 mod are loaded (src/Engine/Mod.cpp) and, propagated to SavedGame (src/Savegame/SavedGame.cpp).
+
 1. Mod loading: Mod implementation enhanced to load the JS scripts (src/Mod/Mod.cpp: in loadAll + loadJS)
+
 1. Trigger for events:
 
 	- Game::OnQuit
@@ -187,3 +197,14 @@ trigger events:
 	- Bridge objects are documented in docs/JSScripts.
 	- Example and demo mods are in bin/js/; they need
 	to be manually added in the user `mods` directory and then activated.
+
+
+1. Optional: JSUI
+
+JSUI is an optional feature (activated in cmake with -DJSUI=ON) which allows
+from scripts to display screens (called `state` in OpenXcom) with different
+widgets: buttons, texts, comboboxes, etc... and interact with them, with
+the look and feel of the game.
+
+See bin/js/JSUITest1 for an example.
+

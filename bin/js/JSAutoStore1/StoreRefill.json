@@ -76,10 +76,11 @@
 			STR_JUMP_ARMOR: {min: 2, max: 4, onlyifnot: "STR_FLYING_SUIT", onlyifresearched: "STR_JUMP_ARMOR"},
 			STR_POWER_SUIT: {min: 2, max: 4, onlyifresearched: "STR_POWER_SUIT"},
 			STR_FLYING_SUIT: {min: 2, max: 4, onlyifresearched: "STR_FLYING_SUIT"},
+			STR_TOXY_SUIT: {min: 0, max: 0, onlyifresearched: "STR_TOXY_SUIT"},
 
 			// ***** Other weapons and equipments *****
 			STR_GRENADE: {min: 8, max: 12, onlyifnot: "STR_ALIEN_GRENADE"},
-			STR_HIGH_EXPLOSIVE: {min: 4, max: 8},
+			STR_HIGH_EXPLOSIVE: {min: 8, max: 12},
 			STR_ELECTRO_FLARE: {min: 12, max: 24},
 			STR_STUN_ROD: {min: 4, max: 8, onlyifnot: "STR_STUN_BOMB"},
 
@@ -99,8 +100,8 @@
 			//   advanced firearms: replace sniper rifles by heavy sniper rifle (tactical sniper rifle)
 			STR_HEAVY_SNIPER_RIFLE: {min: 2, max: 2, onlyifresearched: "STR_HEAVY_SNIPER_RIFLE"},
 			STR_HEAVY_SNIPER_RIFLE_CLIP: {min: 4, max: 6, onlyifnot: "STR_HEAVY_SNIPER_RIFLE_AA_CLIP", onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE"},
-			STR_HEAVY_SNIPER_RIFLE_AA_CLIP: {min: 4, max: 6, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE_AA_CLIP"},
-			STR_HEAVY_SNIPER_RIFLE_HE_CLIP: {min: 4, max: 6, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE_HE_CLIP"},
+			STR_HEAVY_SNIPER_RIFLE_AA_CLIP: {rmin: 2, rmax: 4, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", relto: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE_AA_CLIP"},
+			STR_HEAVY_SNIPER_RIFLE_HE_CLIP: {rmin: 2, rmax: 3, onlyifcraft: "STR_HEAVY_SNIPER_RIFLE", relto: "STR_HEAVY_SNIPER_RIFLE", onlyifresearched: "STR_HEAVY_SNIPER_RIFLE_HE_CLIP"},
 
 			// ***** Guns *****
 			STR_SMG_CLIP: {min: 2, max: 4, onlyifcraft: "STR_SMG", onlyifnot: "STR_SMG_AA_CLIP"},
@@ -117,7 +118,12 @@
 			STR_SHOTGUN_AA_SHELLS_AP: {min: 4, max: 8, onlyifcraft: "STR_SHOTGUN", onlyifresearched: "STR_SHOTGUN_AA_SHELLS_AP"},
 
 			// ***** Laser, Nuclear Laser, Gauss and Plasma (Pistol, Rifle, Heavy and Sniper + shotgun,scatter for laser) *****
+			STR_GAUSS_PISTOL_CLIP: {rmin: 1, rmax: 3, onlyifweapon: "STR_GAUSS_PISTOL", relto: "STR_GAUSS_PISTOL", onlyifresearched: "STR_GAUSS_PISTOL" },
+			STR_GAUSS_RIFLE_CLIP: {rmin: 1, rmax: 3, onlyifweapon: "STR_GAUSS_RIFLE", relto: "STR_GAUSS_RIFLE", onlyifresearched: "STR_GAUSS_RIFLE" },
+			STR_GAUSS_SNIPER_RIFLE_CLIP: {rmin: 1, rmax: 3, onlyifweapon: "STR_GAUSS_SNIPER_RIFLE", relto: "STR_GAUSS_SNIPER_RIFLE", onlyifresearched: "STR_GAUSS_SNIPER_RIFLE_CLIP" },
+			STR_HEAVY_GAUSS_CLIP: {rmin: 1, rmax: 3, onlyifweapon: "STR_HEAVY_GAUSS", relto: "STR_HEAVY_GAUSS", onlyifresearched: "STR_HEAVY_GAUSS_CLIP" },
 
+			STR_LASER_RIFLE_MIB_CLIP: {rmin: 1, rmax: 3, onlyifweapon: "STR_LASER_RIFLE_MIB", relto: "STR_LASER_RIFLE_MIB", onlyifresearched: "STR_LASER_RIFLE_MIB" },
 
 			// ***** tests *****
 			//ERRONEOUS: {min: 1, max: 10, onlyifnot: "STR_PISTOL"},
@@ -125,9 +131,25 @@
 
 		},
 
-		"Jakarta": {},
+		"Jakarta": {
+			// ***** Components *****
+			STR_ALIEN_ALLOYS: {min: 30, max: 50, onlyifresearched: "STR_ALIEN_ALLOYS"},
+			// ***** Craft Weapons Ammo *****
+			STR_AVALANCHE_MISSILES: {rmin: 6, rmax: 9, onlyifweapon: "STR_AVALANCHE_LAUNCHER", relto: "STR_AVALANCHE_LAUNCHER"},
+			STR_ALLOY_CANNON_ROUNDS_X50: {rmin: 6, rmax: 8, onlyifweapon: "STR_ALLOY_CANNON", relto: "STR_ALLOY_CANNON", onlyifresearched: "STR_ALLOY_CANNON" },
+			STR_GAUSS_CANNON_ROUNDS_X60: {rmin: 3, rmax: 5, onlyifweapon: "STR_GAUSS_CANNON", relto: "STR_GAUSS_CANNON", onlyifresearched: "STR_GAUSS_CANNON" },
+			},
 
-		"BUENOS AIRES": {},
+		"BUENOS AIRES": {
+			// ***** Components *****
+			STR_ALIEN_ALLOYS: {min: 30, max: 50, onlyifresearched: "STR_ALIEN_ALLOYS"},
+			// ***** Craft Weapons Ammo *****
+			STR_AVALANCHE_MISSILES: {rmin: 6, rmax: 9, onlyifweapon: "STR_AVALANCHE_LAUNCHER", relto: "STR_AVALANCHE_LAUNCHER"},
+			STR_ALLOY_CANNON_ROUNDS_X50: {rmin: 6, rmax: 8, onlyifweapon: "STR_ALLOY_CANNON", relto: "STR_ALLOY_CANNON", onlyifresearched: "STR_ALLOY_CANNON" },
+			STR_GAUSS_CANNON_ROUNDS_X60: {rmin: 3, rmax: 5, onlyifweapon: "STR_GAUSS_CANNON", relto: "STR_GAUSS_CANNON", onlyifresearched: "STR_GAUSS_CANNON" },
+			},
+
+		"LE CAP": {},
 
 	}
 }

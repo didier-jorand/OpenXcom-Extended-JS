@@ -444,19 +444,47 @@ set ( rapidyaml_src
 if(SWIG_FOUND)
   include(UseSWIG)
 
-  set_property(SOURCE JS/openxcom.i PROPERTY CPLUSPLUS ON)
-  set_property(SOURCE JS/openxcom.i PROPERTY USE_SWIG_DEPENDENCIES ON)
-  set_property(SOURCE JS/openxcom.i PROPERTY COMPILE_OPTIONS "-quickjs;-nodefaultctor;-nodefaultdtor;-Wall")
-  set_property(SOURCE JS/openxcom.i PROPERTY GENERATED_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/src;${SWIG_DIR}/javascript/quickjs")
-  swig_add_library(libopenxcom_wrap TYPE STATIC LANGUAGE javascript SOURCES JS/openxcom.i)
-  set(PKG_DEPS_LDFLAGS "-L${CMAKE_BINARY_DIR}/src;-lopenxcom_wrap" ${PKG_DEPS_LDFLAGS})
+  set_property( SOURCE JS/Swigsrc/openxcom.i PROPERTY CPLUSPLUS ON )
+  set_property( SOURCE JS/Swigsrc/openxcom.i PROPERTY USE_SWIG_DEPENDENCIES ON )
+  set_property( SOURCE JS/Swigsrc/openxcom.i PROPERTY COMPILE_OPTIONS "-quickjs;-nodefaultctor;-nodefaultdtor;-Wall" )
+if (JSUI)
+  set_property ( SOURCE JS/Swigsrc/openxcom.i APPEND PROPERTY COMPILE_DEFINITIONS JS_WITH_UI_WRAPPERS )
+endif()
+
+  set_property( SOURCE JS/Swigsrc/openxcom.i PROPERTY GENERATED_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/src;${SWIG_DIR}/javascript/quickjs" )
+  swig_add_library( libopenxcom_wrap TYPE STATIC LANGUAGE javascript SOURCES JS/Swigsrc/openxcom.i )
+  set( PKG_DEPS_LDFLAGS "-L${CMAKE_BINARY_DIR}/src;-lopenxcom_wrap" ${PKG_DEPS_LDFLAGS} )
 endif()
 
 
 set ( js_src
-  JS/QJSEngine.cpp
-  JS/OXCEQJSEngine.cpp
+  JS/JSEngine/QJSEngine.cpp
+  JS/JSEngine/OXCEQJSEngine.cpp
 )
+
+if (JSUI)
+set ( jsui_src
+  JS/JSUI/JSState.cpp
+  JS/JSUI/JSSurface.cpp
+  JS/JSUI/JSNumberText.cpp
+  JS/JSUI/JSBar.cpp
+  JS/JSUI/JSCursor.cpp
+  JS/JSUI/JSFrame.cpp
+  JS/JSUI/JSProgressBar.cpp
+  JS/JSUI/JSInteractiveSurface.cpp
+  JS/JSUI/JSSlider.cpp
+  JS/JSUI/JSScrollBar.cpp
+  JS/JSUI/JSComboBox.cpp
+  JS/JSUI/JSText.cpp
+  JS/JSUI/JSTextEdit.cpp
+  JS/JSUI/JSTextList.cpp
+  JS/JSUI/JSTextButton.cpp
+  JS/JSUI/JSToggleTextButton.cpp
+  JS/JSUI/JSImageButton.cpp
+  JS/JSUI/JSArrowButton.cpp
+  JS/JSUI/JSWindow.cpp
+)
+endif()
 
 set ( cxx_src
     ${root_src}
@@ -471,6 +499,7 @@ set ( cxx_src
     ${ufopedia_src}
     ${rapidyaml_src}
     ${js_src}
+    ${jsui_src}
 )
 
 set ( c_src
@@ -478,6 +507,11 @@ set ( c_src
 )
 set_property ( SOURCE ${c_src} APPEND PROPERTY COMPILE_DEFINITIONS MINIZ_NO_STDIO )
 set_property ( SOURCE Engine/Scalers/xbrz.cpp APPEND_STRING PROPERTY COMPILE_FLAGS -Wno-unused\ )
+
+
+if (JSUI)
+set_property ( SOURCE ${cxx_src} ${c_src} APPEND PROPERTY COMPILE_DEFINITIONS JS_WITH_UI_WRAPPERS )
+endif()
 
 set ( data_install_dir bin )
 if ( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )

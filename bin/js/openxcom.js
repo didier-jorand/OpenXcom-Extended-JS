@@ -133,14 +133,16 @@ class CBObject {
 	/// This is the internal method that perform the call to the callback
 	/// when the monitored event occurs.
 	callCallbacks(trigger, ...args) {
+		let r = false;
 		//OpenXcom.JSLog(OpenXcom.LOG_VERBOSE,  "callCallbacks: " + this.constructor.name + "."  + trigger + " " + args);
 		let step = args[0];
 		if (this._callbacks[trigger] && this._callbacks[trigger][step]) {
 			let cbs = this._callbacks[trigger][step];
 			for (let i in cbs) {
-				cbs[i].apply(this, args);
+				r = r || cbs[i].apply(this, args);
 			}
 		}
+		return r;
 	}
 }
 
@@ -154,7 +156,8 @@ class Game extends CBObject {
 	}
 
 	/// \public
-	/// This method is called from Game::quit (end of), no code returned.
+	/// This method is called from Game::quit (end of), it returns a boolean
+	/// value: if it is `true`, the quit operation is aborted.
 	///
 	/// It is triggered when the game (as application) is about to exit.
 	///
@@ -165,8 +168,7 @@ class Game extends CBObject {
 	/// and step=0.
 	onQuit(step, self) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "Game::onQuit");
-		this.callCallbacks("onQuit", step, self);
-		return 0;
+		return this.callCallbacks("onQuit", step, self);
 	}
 };
 
@@ -202,8 +204,7 @@ class SavedGame extends CBObject {
 	/// and step=0.
 	onNew(step, self) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onNew");
-		this.callCallbacks("onNew", step, self);
-		return 0;
+		return this.callCallbacks("onNew", step, self);
 	}
 
 	/// \public
@@ -218,8 +219,7 @@ class SavedGame extends CBObject {
 	/// and step=0.
 	onDelete(step, self) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onDelete");
-		this.callCallbacks("onDelete", step, self);
-		return 0;
+		return this.callCallbacks("onDelete", step, self);
 	}
 
 	/// \public
@@ -235,8 +235,7 @@ class SavedGame extends CBObject {
 	/// and step=0 or 1.
 	onLoad(step, self, filename) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onLoad");
-		this.callCallbacks("onLoad", step, self, filename);
-		return 0;
+		return this.callCallbacks("onLoad", step, self, filename);
 	}
 
 	/// \public
@@ -257,8 +256,7 @@ class SavedGame extends CBObject {
 	/// and step=0.
 	onLoadOwnData(step, self, filename, reader) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onLoadOwnData");
-		this.callCallbacks("onLoadOwnData", step, self, filename, reader);
-		return 0;
+		return this.callCallbacks("onLoadOwnData", step, self, filename, reader);
 	}
 
 	/// \public
@@ -274,8 +272,7 @@ class SavedGame extends CBObject {
 	/// and step=0 or 1.
 	onSave(step, self, filename) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onSave");
-		this.callCallbacks("onSave", step, self, filename);
-		return 0;
+		return this.callCallbacks("onSave", step, self, filename);
 	}
 
 	/// \public
@@ -296,8 +293,7 @@ class SavedGame extends CBObject {
 	/// and step=0.
 	onSaveOwnData(step, self, filename, writer) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onSaveOwnData");
-		this.callCallbacks("onSaveOwnData", step, self, filename, writer);
-		return 0;
+		return this.callCallbacks("onSaveOwnData", step, self, filename, writer);
 	}
 
 	/// \public
@@ -314,8 +310,7 @@ class SavedGame extends CBObject {
 	onSpawnEvent(step, self, event) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "SavedGame:onSpawnEvent");
 		print("######################################## onSpawnEvent");
-		this.callCallbacks("onSpawnEvent", step, self, event);
-		return 0;
+		return this.callCallbacks("onSpawnEvent", step, self, event);
 	}
 
 };
@@ -354,8 +349,7 @@ class GeoscapeState extends CBObject {
 	/// and step=0.
 	onTime5Seconds(step, self, saved_game) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "GeoscapeState:onTime5Seconds");
-		this.callCallbacks("onTime5Seconds", step, self, saved_game);
-		return 0;
+		return this.callCallbacks("onTime5Seconds", step, self, saved_game);
 	}
 
 	/// \public
@@ -371,8 +365,7 @@ class GeoscapeState extends CBObject {
 	/// and step=0 or 1.
 	onTime10Minutes(step, self, saved_game) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "GeoscapeState:onTime10Minutes");
-		this.callCallbacks("onTime10Minutes", step, self, saved_game);
-		return 0;
+		return this.callCallbacks("onTime10Minutes", step, self, saved_game);
 	}
 
 	/// \public
@@ -388,8 +381,7 @@ class GeoscapeState extends CBObject {
 	/// and step=0 or 1.
 	onTime30Minutes(step, self, saved_game) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "GeoscapeState:onTime30Minutes");
-		this.callCallbacks("onTime30Minutes", step, self, saved_game);
-		return 0;
+		return this.callCallbacks("onTime30Minutes", step, self, saved_game);
 	}
 
 	/// \public
@@ -405,8 +397,7 @@ class GeoscapeState extends CBObject {
 	/// and step=0 or 1.
 	onTime1Hour(step, self, saved_game) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "GeoscapeState:onTime1Hour");
-		this.callCallbacks("onTime1Hour", step, self, saved_game);
-		return 0;
+		return this.callCallbacks("onTime1Hour", step, self, saved_game);
 	}
 
 	/// \public
@@ -422,8 +413,7 @@ class GeoscapeState extends CBObject {
 	/// and step=0 or 1.
 	onTime1Day(step, self, saved_game) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "GeoscapeState:onTime1Day");
-		this.callCallbacks("onTime1Day", step, self, saved_game);
-		return 0;
+		return this.callCallbacks("onTime1Day", step, self, saved_game);
 	}
 
 	/// \public
@@ -439,8 +429,7 @@ class GeoscapeState extends CBObject {
 	/// and step=0 or 1.
 	onTime1Month(step, self, saved_game) {
 		OpenXcom.JSLog(OpenXcom.LOG_VERBOSE, "GeoscapeState:onTime1Month");
-		this.callCallbacks("onTime1Month", step, self, saved_game);
-		return 0;
+		return this.callCallbacks("onTime1Month", step, self, saved_game);
 	}
 };
 var jsGeoscapeState = new GeoscapeState();

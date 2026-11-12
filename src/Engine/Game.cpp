@@ -44,7 +44,7 @@
 #include "../Geoscape/GeoscapeState.h"
 #include "../Menu/TestState.h"
 #include "../fallthrough.h"
-#include "../JS/OXCEQJSEngine.h"
+#include "../JS/JSEngine/OXCEQJSEngine.h"
 
 namespace OpenXcom
 {
@@ -415,7 +415,12 @@ void Game::quit()
 				JSValue jsstep = _jsengine->NewInt(0);
 				JSValue jsself = _jsengine->ConvertGamePtr(this);
 				JSValue jsargs[2] = {jsstep, jsself};
-				(void)_jsengine->CallMethod(jsm, _jsengine->GetGameObject(), 2, jsargs);
+				JSValue jsresult;
+				jsresult = _jsengine->CallMethod(jsm, _jsengine->GetGameObject(), 2, jsargs);
+				if (_jsengine->IsBool(jsresult) && _jsengine->ToBool(jsresult)) {
+					_quit = false;
+				}
+				_jsengine->FreeValue(jsresult);
 				_jsengine->FreeValue(jsself);
 				_jsengine->FreeValue(jsstep);
 				_jsengine->FreeValue(jsm);
